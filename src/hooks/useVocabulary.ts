@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { Vocabulary } from '@/types'
 import { loadVocabulary } from '@/services/VocabularyService'
 
-type SortOption = 'alphabetical' | 'reverse' | 'random' 
+type SortOption = 'alphabetical' | 'reverse' | 'random'
 
 export function useVocabulary() {
   const [allWords, setAllWords] = useState<Vocabulary[]>([])
