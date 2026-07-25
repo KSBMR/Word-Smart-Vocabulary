@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-az+tyq#mmt%01g+#-8hcx71b(8ari@j&g9lx$*@c_7#h!ii&5r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['word-smart-backend.onrender.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -57,7 +57,6 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://word-smart-vocabulary.vercel.app',
-    'word-smart-backend.onrender.com',
 ]
 
 # JWT Authentication
