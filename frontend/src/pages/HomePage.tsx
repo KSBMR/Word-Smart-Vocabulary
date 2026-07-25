@@ -4,29 +4,33 @@ import { useBookmarks } from '@/hooks/useBookmarks';
 import { useWeeklyActivity } from '@/hooks/useWeeklyActivity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { BookOpen, Bookmark, Flame, Zap } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BookOpen, Bookmark, Flame, Zap, Library } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 
 export default function HomePage() {
   const { user } = useAuth();
-  const { totalWords } = useVocabulary();
+  const { words, totalWords } = useVocabulary();
   const { bookmarks } = useBookmarks();
   const { data, loading } = useWeeklyActivity();
+  const navigate = useNavigate();
 
   const wordsLearned = data?.reduce((sum, d) => sum + d.words_learned_count, 0) || 0;
   const totalQuiz = data?.reduce((sum, d) => sum + d.quiz_attempts, 0) || 0;
 
   // Random word for "Word of the Day"
-  const randomWord = useVocabulary().words?.[Math.floor(Math.random() * useVocabulary().words.length)];
+  const randomWord = words?.[Math.floor(Math.random() * words.length)];
 
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">
-        Welcome{user ? `, ${user.username}` : ''}! 👋
-      </h2>
-      <p className="text-muted-foreground">Let's continue your vocabulary journey.</p>
+      {/* Welcome */}
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">
+          Welcome{user ? `, ${user.username}` : ''}! 👋
+        </h2>
+        <p className="text-muted-foreground">Let's continue your vocabulary journey.</p>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -77,7 +81,24 @@ export default function HomePage() {
         <Link to="/flashcards"><Button>📚 Flashcards</Button></Link>
         <Link to="/quiz"><Button variant="outline">🧠 Quiz</Button></Link>
         <Link to="/revision"><Button variant="outline">🔄 Revision</Button></Link>
+        <Link to="/vocabulary"><Button variant="default">📖 Browse Vocabulary</Button></Link>
       </div>
+
+      {/* Browse Vocabulary Card - Prominent */}
+      <Card
+        className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-primary/20"
+        onClick={() => navigate('/vocabulary')}
+      >
+        <CardContent className="flex items-center justify-between p-6">
+          <div>
+            <h3 className="text-xl font-semibold">📖 Browse All Vocabulary</h3>
+            <p className="text-muted-foreground">
+              Explore {totalWords} words from Word Smart 1 & 2
+            </p>
+          </div>
+          <Library className="h-8 w-8 text-muted-foreground" />
+        </CardContent>
+      </Card>
 
       {/* Weekly Activity Chart */}
       <Card>
