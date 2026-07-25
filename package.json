@@ -1,3 +1,4 @@
+
 {
   "name": "word-smart",
   "private": true,
@@ -5,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "NODE_OPTIONS='--max_old_space_size=4096' vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -69,4 +70,6 @@
     "vite": "^5.0.0",
     "vite-plugin-pwa": "^0.17.4"
   }
+
 }
+
