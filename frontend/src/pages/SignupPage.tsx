@@ -25,6 +25,10 @@ export default function SignupPage() {
       navigate('/login');
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Signup failed. Try again.');
+      console.error(err);
+  // err.response might be undefined if the request never reaches the server
+      const msg = err.response?.data?.detail || err.message || 'Signup failed. Try again.';
+      setError(msg);
     }
   };
 
