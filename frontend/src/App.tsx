@@ -13,6 +13,8 @@ import RevisionPage from '@/pages/RevisionPage';
 import BookmarksPage from '@/pages/BookmarksPage';
 import ProgressPage from '@/pages/ProgressPage';
 import SettingsPage from '@/pages/SettingsPage';
+import LoginPage from '@/pages/LoginPage';
+import SignupPage from '@/pages/SignupPage';
 
 const queryClient = new QueryClient();
 
