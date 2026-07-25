@@ -1,24 +1,28 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
+import { getBookmarks, addBookmark, removeBookmark } from '@/services/bookmarks';
 
-const STORAGE_KEY = 'wordSmart_bookmarks'
-
-export function useBookmarks() {
-  const [bookmarks, setBookmarks] = useState<number[]>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : []
-  })
+export const useBookmarks = () => {
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookmarks))
-  }, [bookmarks])
+    getBookmarks()
+      .then((data) => setBookmarks(data))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const toggleBookmark = (wordId: number) => {
-    setBookmarks(prev =>
-      prev.includes(wordId) ? prev.filter(id => id !== wordId) : [...prev, wordId]
-    )
-  }
+  const toggleBookmark = async (wordId: number) => {
+    const isBookmarked = bookmarks.includes(wordId);
+    if (isBookmarked) {
+      const updated = await removeBookmark(wordId);
+      setBookmarks(updated);
+    } else {
+      const updated = await addBookmark(wordId);
+      setBookmarks(updated);
+    }
+  };
 
-  const isBookmarked = (wordId: number) => bookmarks.includes(wordId)
+  const isBookmarked = (wordId: number) => bookmarks.includes(wordId);
 
-  return { bookmarks, toggleBookmark, isBookmarked }
-}
+  return { bookmarks, loading, toggleBookmark, isBookmarked };
+};

@@ -89,7 +89,7 @@ export function WordDetailsModal({
                   className="text-3xl font-bold text-muted-foreground hover:text-primary transition-colors"
                   title={`View all words starting with "${letter}"`}
                 >
-                  {letter}
+                  {/* {letter} */}
                 </button>
                 <span className="text-2xl">{word.word}</span>
                 <Button variant="ghost" size="icon" onClick={speak} className="h-8 w-8">
