@@ -8,20 +8,21 @@ export const useAuth = () => {
 
   useEffect(() => {
     const token = getAccessToken();
-    if (token) {
-      getProfile()
-        .then((data) => {
-          setUser(data);
-          setIsAuthenticated(true);
-        })
-        .catch(() => {
-          logoutService();
-          setIsAuthenticated(false);
-        })
-        .finally(() => setLoading(false));
-    } else {
+    if (!token) {
       setLoading(false);
+      return;
     }
+
+    getProfile()
+      .then((data) => {
+        setUser(data);
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        logoutService();
+        setIsAuthenticated(false);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const login = async (username: string, password: string) => {
