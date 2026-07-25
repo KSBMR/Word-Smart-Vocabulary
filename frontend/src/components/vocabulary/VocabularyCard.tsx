@@ -1,14 +1,16 @@
-import { Vocabulary } from '@/types'
-import { Bookmark, Volume2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { cn } from '@/lib/utils'
+import { Vocabulary } from '@/types';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthModal } from '@/store/authModalStore';
+import { Bookmark, Volume2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface VocabularyCardProps {
-  word: Vocabulary
-  onClick?: (word: Vocabulary) => void
-  isBookmarked?: boolean
-  onBookmarkToggle?: (word: Vocabulary) => void
+  word: Vocabulary;
+  onClick?: (word: Vocabulary) => void;
+  isBookmarked?: boolean;
+  onBookmarkToggle?: (word: Vocabulary) => void;
 }
 
 export function VocabularyCard({
@@ -17,14 +19,26 @@ export function VocabularyCard({
   isBookmarked = false,
   onBookmarkToggle,
 }: VocabularyCardProps) {
+  const { isAuthenticated } = useAuth();
+  const { open } = useAuthModal();
+
   const speak = () => {
     if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word.word)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-      window.speechSynthesis.speak(utterance)
+      const utterance = new SpeechSynthesisUtterance(word.word);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
     }
-  }
+  };
+
+  const handleBookmarkClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isAuthenticated) {
+      open('login');
+      return;
+    }
+    onBookmarkToggle?.(word);
+  };
 
   return (
     <div
@@ -59,8 +73,8 @@ export function VocabularyCard({
             size="icon"
             className="h-8 w-8"
             onClick={(e) => {
-              e.stopPropagation()
-              speak()
+              e.stopPropagation();
+              speak();
             }}
           >
             <Volume2 className="h-4 w-4" />
@@ -69,10 +83,7 @@ export function VocabularyCard({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={(e) => {
-              e.stopPropagation()
-              onBookmarkToggle?.(word)
-            }}
+            onClick={handleBookmarkClick}
           >
             <Bookmark
               className={cn('h-4 w-4', isBookmarked && 'fill-primary text-primary')}
@@ -81,5 +92,5 @@ export function VocabularyCard({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSearchStore } from '@/store/searchStore';
+import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -22,6 +23,7 @@ export default function Header() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const { query, setQuery } = useSearchStore();
   const { user, logout } = useAuth();
+  const { open } = useAuthModal();
   const [localQuery, setLocalQuery] = useState(query);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,10 +90,10 @@ export default function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  {/* <Link to="/profile" className="cursor-pointer">
+                  <Link to="/profile" className="cursor-pointer">
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
-                  </Link> */}
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
                   <LogOut className="mr-2 h-4 w-4" />
@@ -100,14 +102,9 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link to="/login">
-                <Button variant="ghost" size="sm">Login</Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm">Sign Up</Button>
-              </Link>
-            </div>
+            <Button variant="default" size="sm" onClick={() => open('login')}>
+              Login / Sign Up
+            </Button>
           )}
         </div>
       </div>

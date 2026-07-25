@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppLayout from '@/components/layout/AppLayout';
+import { AuthModal } from '@/components/auth/AuthModal';
+import { ProtectedPage } from '@/components/ProtectedPage';
 import HomePage from '@/pages/HomePage';
 import VocabularyPage from '@/pages/VocabularyPage';
 import FlashcardsPage from '@/pages/FlashcardsPage';
@@ -12,7 +14,6 @@ import ProgressPage from '@/pages/ProgressPage';
 import SettingsPage from '@/pages/SettingsPage';
 import LoginPage from '@/pages/LoginPage';
 import SignupPage from '@/pages/SignupPage';
-import ProtectedRoute from '@/routes/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <BrowserRouter>
+          <AuthModal />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
@@ -28,13 +30,46 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/vocabulary" element={<VocabularyPage />} />
               {/* Protected routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/flashcards" element={<FlashcardsPage />} />
-                <Route path="/quiz" element={<QuizPage />} />
-                <Route path="/revision" element={<RevisionPage />} />
-                <Route path="/bookmarks" element={<BookmarksPage />} />
-                <Route path="/progress" element={<ProgressPage />} />
-              </Route>
+              <Route
+                path="/flashcards"
+                element={
+                  <ProtectedPage>
+                    <FlashcardsPage />
+                  </ProtectedPage>
+                }
+              />
+              <Route
+                path="/quiz"
+                element={
+                  <ProtectedPage>
+                    <QuizPage />
+                  </ProtectedPage>
+                }
+              />
+              <Route
+                path="/revision"
+                element={
+                  <ProtectedPage>
+                    <RevisionPage />
+                  </ProtectedPage>
+                }
+              />
+              <Route
+                path="/bookmarks"
+                element={
+                  <ProtectedPage>
+                    <BookmarksPage />
+                  </ProtectedPage>
+                }
+              />
+              <Route
+                path="/progress"
+                element={
+                  <ProtectedPage>
+                    <ProgressPage />
+                  </ProtectedPage>
+                }
+              />
               <Route path="/settings" element={<SettingsPage />} />
             </Route>
           </Routes>
