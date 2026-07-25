@@ -264,7 +264,7 @@ export default function VocabularyPage() {
           }
         }}
         onWordSelect={openWordDetails}
-        {/* onLetterClick={() => setLetterPickerOpen(true)} */}
+       
       />
 
       {/* Letter Picker Modal */}
