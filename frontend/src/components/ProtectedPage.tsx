@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
@@ -8,8 +9,13 @@ interface ProtectedPageProps {
 }
 
 export function ProtectedPage({ children }: ProtectedPageProps) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const { open } = useAuthModal();
+
+  // Debug log
+  useEffect(() => {
+    console.log('🔵 ProtectedPage - isAuthenticated:', isAuthenticated, 'user:', user);
+  }, [isAuthenticated, user]);
 
   if (loading) {
     return (

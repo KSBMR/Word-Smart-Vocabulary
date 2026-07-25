@@ -33,6 +33,10 @@ export const useAuth = () => {
 
   const signup = async (username: string, email: string, password: string) => {
     await signupService(username, email, password);
+    // Auto-login after signup
+    const profile = await getProfile();
+    setUser(profile);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
