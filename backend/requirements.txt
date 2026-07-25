@@ -1,0 +1,3 @@
+cd E:\word-smart\backend
+venv\Scripts\activate
+pip freeze > requirements.txt
