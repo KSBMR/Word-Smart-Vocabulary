@@ -16,7 +16,7 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const { signup, login } = useAuth(); // also import login
   const { close } = useAuthModal();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,10 +30,11 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
 
     try {
       await signup(username, email, password);
+      // Auto-login after signup
+      await login(username, password);
       close();
       onSuccess?.();
-      // Redirect to login modal after signup (optional: auto-login)
-      // For now, we close modal and user can login.
+      window.location.href = '/';
     } catch (err: any) {
       const msg = err.response?.data?.detail || err.message || 'Signup failed. Try again.';
       setError(msg);
