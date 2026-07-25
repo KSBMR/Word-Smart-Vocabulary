@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -15,7 +16,7 @@ export default function LoginPage() {
       await login(username, password);
       window.location.href = '/'; // redirect to home
     } catch (error) {
-      alert('Login failed. Check credentials.');
+      setError('Login failed. Check credentials.');
     }
   };
 
