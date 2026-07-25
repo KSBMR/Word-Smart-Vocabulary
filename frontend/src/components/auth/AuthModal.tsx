@@ -12,7 +12,8 @@ export function AuthModal() {
   return (
     <Dialog open={isOpen} onOpenChange={close}>
       <DialogPortal>
-        <DialogOverlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" />
+        {/* Blurred overlay using theme background */}
+        <DialogOverlay className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm" />
         <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto bg-background border shadow-lg">
           <DialogHeader>
             <DialogTitle>{mode === 'login' ? 'Login' : 'Create Account'}</DialogTitle>
