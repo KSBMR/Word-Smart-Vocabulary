@@ -57,6 +57,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'https://word-smart-vocabulary.vercel.app',
+    'word-smart-backend.onrender.com',
 ]
 
 # JWT Authentication
