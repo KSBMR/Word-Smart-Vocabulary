@@ -12,3 +12,9 @@ backend/venv/
 backend/__pycache__/
 backend/*.pyc
 backend/db.sqlite3
+
+
+# kisu jinish update korte hobe
+# 1st login/signup site er upore Modal popup er moto show kow korbe, ar login/signup modal popup er background ta halka blur hobe. Ar cross option thakbe jate login/signup cross kora jai. login er niche signup option rakhio
+# 2nd without login Bookmark a click korle login/signup modal popup ta showkorbe
+# 3rd Flashcards, Quiz, Revision, Bookmarks, Progress tab a without login user dukhle "You have to login/Signup" dekhabe=> aita kono popup na, login ba sign up korle oi page gula show korbe

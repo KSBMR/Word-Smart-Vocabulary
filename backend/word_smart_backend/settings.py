@@ -60,9 +60,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # For testing only!
-CORS_ALLOW_CREDENTIALS = True
-
 # JWT Authentication
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -101,10 +98,17 @@ WSGI_APPLICATION = 'word_smart_backend.wsgi.application'
 #     }
 # }
 
-import dj_database_url
+import os
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Database - use SQLite for now (or PostgreSQL if you set DATABASE_URL)
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 # Password validation
