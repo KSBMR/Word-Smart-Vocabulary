@@ -61,6 +61,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True  # For testing only!
+CORS_ALLOW_CREDENTIALS = True
 
 # JWT Authentication
 REST_FRAMEWORK = {
