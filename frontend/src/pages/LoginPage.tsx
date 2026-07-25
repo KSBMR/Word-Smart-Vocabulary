@@ -8,15 +8,28 @@ export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('🔵 Login button clicked');  // Debug 1
+    console.log('🔵 Username:', username, 'Password:', password); // Debug 2
+
+    setLoading(true);
+    setError('');
+
     try {
+      console.log('🔵 Calling login...');
       await login(username, password);
-      window.location.href = '/'; // redirect to home
-    } catch (error) {
-      setError('Login failed. Check credentials.');
+      console.log('🔵 Login successful, redirecting...');
+      window.location.href = '/';
+    } catch (err: any) {
+      console.error('🔴 Login error:', err);
+      // Show the actual error message from the server if available
+      const msg = err.response?.data?.detail || err.message || 'Login failed. Check credentials.';
+      setError(msg);
+      setLoading(false);
     }
   };
 
@@ -33,6 +46,7 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              disabled={loading}
             />
             <Input
               type="password"
@@ -40,8 +54,12 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
-            <Button type="submit" className="w-full">Login</Button>
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
           </form>
         </CardContent>
       </Card>
