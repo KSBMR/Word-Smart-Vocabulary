@@ -6,14 +6,8 @@ import { SignupForm } from './SignupForm';
 export function AuthModal() {
   const { isOpen, mode, close, open } = useAuthModal();
 
-  const switchToLogin = () => {
-    open('login');
-  };
-  const switchToSignup = () => {
-    open('signup');
-  };
-
-  if (!isOpen) return null;
+  const switchToLogin = () => open('login');
+  const switchToSignup = () => open('signup');
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>

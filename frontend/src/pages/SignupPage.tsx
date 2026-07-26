@@ -11,7 +11,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const { signup } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { signup, login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,15 +21,19 @@ export default function SignupPage() {
       setError('Passwords do not match');
       return;
     }
+    setError('');
+    setLoading(true);
+
     try {
       await signup(username, email, password);
-      navigate('/login');
+      // Auto-login after signup
+      await login(username, password);
+      navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Signup failed. Try again.');
-      console.error(err);
-  // err.response might be undefined if the request never reaches the server
       const msg = err.response?.data?.detail || err.message || 'Signup failed. Try again.';
       setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,13 +50,14 @@ export default function SignupPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              disabled={loading}
             />
             <Input
               type="email"
-              placeholder="Email"
+              placeholder="Email (optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              disabled={loading}
             />
             <Input
               type="password"
@@ -59,6 +65,7 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={loading}
             />
             <Input
               type="password"
@@ -66,13 +73,19 @@ export default function SignupPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              disabled={loading}
             />
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <Button type="submit" className="w-full">Sign Up</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign Up'}
+            </Button>
+            <p className="text-sm text-center text-muted-foreground">
+              Already have an account?{' '}
+              <Link to="/login" className="text-primary hover:underline">
+                Login
+              </Link>
+            </p>
           </form>
-          <p className="mt-4 text-sm text-center text-muted-foreground">
-            Already have an account? <Link to="/login" className="text-primary">Login</Link>
-          </p>
         </CardContent>
       </Card>
     </div>

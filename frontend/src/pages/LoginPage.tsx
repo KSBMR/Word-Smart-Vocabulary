@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,22 +14,16 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('🔵 Login button clicked');  // Debug 1
-    console.log('🔵 Username:', username, 'Password:', password); // Debug 2
-
-    setLoading(true);
     setError('');
+    setLoading(true);
 
     try {
-      console.log('🔵 Calling login...');
       await login(username, password);
-      console.log('🔵 Login successful, redirecting...');
       window.location.href = '/';
     } catch (err: any) {
-      console.error('🔴 Login error:', err);
-      // Show the actual error message from the server if available
       const msg = err.response?.data?.detail || err.message || 'Login failed. Check credentials.';
       setError(msg);
+    } finally {
       setLoading(false);
     }
   };
@@ -60,6 +55,12 @@ export default function LoginPage() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Login'}
             </Button>
+            <p className="text-sm text-center text-muted-foreground">
+              Don't have an account?{' '}
+              <Link to="/signup" className="text-primary hover:underline">
+                Sign Up
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>

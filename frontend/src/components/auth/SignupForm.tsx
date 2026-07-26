@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthModal, allowAuthModal } from '@/store/authModalStore';
+import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) {
+interface SignupFormProps {
+  onSwitchToLogin?: () => void;
+}
+
+export function SignupForm({ onSwitchToLogin }: SignupFormProps) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -81,10 +85,7 @@ export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }
         <button
           type="button"
           className="text-primary hover:underline"
-          onClick={() => {
-            allowAuthModal();
-            onSwitchToLogin?.();
-          }}
+          onClick={onSwitchToLogin}
         >
           Login
         </button>
