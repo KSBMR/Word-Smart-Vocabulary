@@ -1,23 +1,20 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthModal } from '@/store/authModalStore';
+import { useAuthModal, allowAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-interface SignupFormProps {
-  onSuccess?: () => void;
-  onSwitchToLogin?: () => void;
-}
-
-export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
+export function SignupForm({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup, login } = useAuth(); // also import login
+  const { signup, login } = useAuth();
   const { close } = useAuthModal();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +30,7 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
       // Auto-login after signup
       await login(username, password);
       close();
-      onSuccess?.();
-      window.location.href = '/';
+      navigate('/');
     } catch (err: any) {
       const msg = err.response?.data?.detail || err.message || 'Signup failed. Try again.';
       setError(msg);
@@ -85,7 +81,10 @@ export function SignupForm({ onSuccess, onSwitchToLogin }: SignupFormProps) {
         <button
           type="button"
           className="text-primary hover:underline"
-          onClick={onSwitchToLogin}
+          onClick={() => {
+            allowAuthModal();
+            onSwitchToLogin?.();
+          }}
         >
           Login
         </button>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthModal } from '@/store/authModalStore';
+import { useAuthModal, allowAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -58,7 +58,10 @@ export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void 
         <button
           type="button"
           className="text-primary hover:underline"
-          onClick={onSwitchToSignup}
+          onClick={() => {
+            allowAuthModal();
+            onSwitchToSignup?.();
+          }}
         >
           Sign Up
         </button>
