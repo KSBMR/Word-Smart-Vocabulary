@@ -1,6 +1,4 @@
 import { Vocabulary } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
-import { useAuthModal } from '@/store/authModalStore';
 import { Bookmark, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,9 +17,6 @@ export function VocabularyCard({
   isBookmarked = false,
   onBookmarkToggle,
 }: VocabularyCardProps) {
-  const { isAuthenticated } = useAuth();
-  const { open } = useAuthModal();
-
   const speak = () => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(word.word);
@@ -33,10 +28,6 @@ export function VocabularyCard({
 
   const handleBookmarkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!isAuthenticated) {
-      open('login');
-      return;
-    }
     onBookmarkToggle?.(word);
   };
 

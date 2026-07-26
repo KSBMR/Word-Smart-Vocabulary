@@ -1,21 +1,21 @@
-import { useBookmarks } from '@/hooks/useBookmarks'
-import { useVocabulary } from '@/hooks/useVocabulary'
-import { VocabularyCard } from '@/components/vocabulary/VocabularyCard'
-import { Loader2 } from 'lucide-react'
+import { useBookmarks } from '@/hooks/useBookmarks';
+import { useVocabulary } from '@/hooks/useVocabulary';
+import { VocabularyCard } from '@/components/vocabulary/VocabularyCard';
+import { Loader2 } from 'lucide-react';
 
 export default function BookmarksPage() {
-  const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks()
-  const { allWords, loading } = useVocabulary()
+  const { bookmarks, toggleBookmark, isBookmarked } = useBookmarks();
+  const { allWords, loading } = useVocabulary();
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    )
+    );
   }
 
-  const bookmarkedWords = allWords.filter(w => bookmarks.includes(w.id))
+  const bookmarkedWords = allWords.filter(w => bookmarks.includes(w.id));
 
   return (
     <div className="space-y-6">
@@ -40,5 +40,5 @@ export default function BookmarksPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
