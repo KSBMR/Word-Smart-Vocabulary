@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
@@ -9,20 +8,11 @@ interface ProtectedPageProps {
 }
 
 export function ProtectedPage({ children }: ProtectedPageProps) {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const { open } = useAuthModal();
 
-  // Debug log
-  useEffect(() => {
-    console.log('🔵 ProtectedPage - isAuthenticated:', isAuthenticated, 'user:', user);
-  }, [isAuthenticated, user]);
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
+    return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {

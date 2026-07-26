@@ -1,21 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-  onSwitchToSignup?: () => void;
-}
-
-export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
+export function LoginForm({ onSwitchToSignup }: { onSwitchToSignup?: () => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const { close } = useAuthModal();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,8 +22,7 @@ export function LoginForm({ onSuccess, onSwitchToSignup }: LoginFormProps) {
     try {
       await login(username, password);
       close();
-      onSuccess?.();
-      window.location.href = '/';
+      navigate('/');
     } catch (err: any) {
       const msg = err.response?.data?.detail || err.message || 'Login failed. Check credentials.';
       setError(msg);
