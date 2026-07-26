@@ -12,7 +12,11 @@ export function ProtectedPage({ children }: ProtectedPageProps) {
   const { open } = useAuthModal();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
