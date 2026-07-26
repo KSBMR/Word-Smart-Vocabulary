@@ -102,3 +102,8 @@ class WeeklyActivityView(APIView):
                     'revisions_done': 0
                 })
         return Response(data)
+
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
