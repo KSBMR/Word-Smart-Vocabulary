@@ -12,6 +12,9 @@ interface AuthModalStore {
 export const useAuthModal = create<AuthModalStore>((set) => ({
   isOpen: false,
   mode: 'login',
-  open: (mode = 'login') => set({ isOpen: true, mode }),
+  open: (mode = 'login') => {
+    console.trace('🔵 AuthModal opened with mode:', mode);
+    set({ isOpen: true, mode });
+  },
   close: () => set({ isOpen: false }),
 }));
