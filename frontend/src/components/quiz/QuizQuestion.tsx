@@ -1,25 +1,32 @@
-import { Vocabulary } from '@/types'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { CheckCircle, XCircle } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Vocabulary } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { CheckCircle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface QuizQuestionProps {
   question: {
-    word: Vocabulary
-    options: string[]
-    correctAnswer: string
-  }
-  selectedAnswer: string | null
-  onAnswer: (option: string) => void
-  onNext: () => void
-  isLast: boolean
+    word: Vocabulary;
+    options: string[];
+    correctAnswer: string;
+    index: number;
+  };
+  selectedAnswer: string | null;
+  onAnswer: (option: string) => void;
+  onNext: () => void;
+  isLast: boolean;
 }
 
-export function QuizQuestion({ question, selectedAnswer, onAnswer, onNext, isLast }: QuizQuestionProps) {
-  const isCorrect = selectedAnswer === question.correctAnswer
-  const showFeedback = selectedAnswer !== null
+export function QuizQuestion({
+  question,
+  selectedAnswer,
+  onAnswer,
+  onNext,
+  isLast,
+}: QuizQuestionProps) {
+  const isCorrect = selectedAnswer === question.correctAnswer;
+  const showFeedback = selectedAnswer !== null;
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -27,7 +34,9 @@ export function QuizQuestion({ question, selectedAnswer, onAnswer, onNext, isLas
         <CardTitle className="text-2xl text-center">
           What is the meaning of <span className="font-bold text-primary">{question.word.word}</span>?
         </CardTitle>
-        <p className="text-sm text-muted-foreground text-center">{question.word.pronunciation}</p>
+        <p className="text-sm text-muted-foreground text-center">
+          {question.word.pronunciation}
+        </p>
       </CardHeader>
       <CardContent>
         <RadioGroup
@@ -37,13 +46,13 @@ export function QuizQuestion({ question, selectedAnswer, onAnswer, onNext, isLas
           className="space-y-2"
         >
           {question.options.map((option, idx) => {
-            const isSelected = selectedAnswer === option
-            const isCorrectOption = option === question.correctAnswer
-            let variant = 'default'
+            const isSelected = selectedAnswer === option;
+            const isCorrectOption = option === question.correctAnswer;
+            let variant = 'default';
             if (showFeedback && isSelected) {
-              variant = isCorrect ? 'correct' : 'incorrect'
+              variant = isCorrect ? 'correct' : 'incorrect';
             } else if (showFeedback && isCorrectOption) {
-              variant = 'correct'
+              variant = 'correct';
             }
             return (
               <div
@@ -62,19 +71,24 @@ export function QuizQuestion({ question, selectedAnswer, onAnswer, onNext, isLas
                 {showFeedback && isCorrectOption && <CheckCircle className="h-5 w-5 text-green-500" />}
                 {showFeedback && isSelected && !isCorrect && <XCircle className="h-5 w-5 text-red-500" />}
               </div>
-            )
+            );
           })}
         </RadioGroup>
 
         {showFeedback && (
-          <div className="mt-4 p-3 bg-muted rounded-lg">
-            <p className="text-sm">
-              <span className="font-medium">Bangla meaning:</span> {question.word.banglaMeaning}
-            </p>
+          <div className="mt-4 p-3 bg-muted rounded-lg space-y-2">
+            <div>
+              <span className="font-medium">Bangla meaning:</span>{' '}
+              {question.word.banglaMeaning}
+            </div>
+            <div>
+              <span className="font-medium">Example:</span>{' '}
+              <span className="italic">"{question.word.sentence}"</span>
+            </div>
             {!isCorrect && (
-              <p className="text-sm text-red-500 mt-1">
+              <div className="text-sm text-red-500">
                 Correct answer: <span className="font-medium">{question.correctAnswer}</span>
-              </p>
+              </div>
             )}
           </div>
         )}
@@ -88,5 +102,5 @@ export function QuizQuestion({ question, selectedAnswer, onAnswer, onNext, isLas
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }
