@@ -22,6 +22,7 @@ import {
 import { Grid2X2, List, Loader2, ArrowUp } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Vocabulary } from '@/types'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -116,13 +117,24 @@ export default function VocabularyPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-[60vh]">
+  //       <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  //     </div>
+  //   )
+  // }
+  // Instead of a spinner...
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-4">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Skeleton key={i} className="h-24 rounded-lg" />
+        ))}
       </div>
-    )
+    );
   }
+// `Skeleton` is available from shadcn/ui: npx shadcn@latest add skeleton
 
   return (
     <div ref={topRef} className="space-y-6">
