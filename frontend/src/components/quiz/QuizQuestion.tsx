@@ -2,8 +2,9 @@ import { Vocabulary } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Volume2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSpeech } from '@/hooks/useSpeech';
 
 interface QuizQuestionProps {
   question: {
@@ -25,8 +26,10 @@ export function QuizQuestion({
   onNext,
   isLast,
 }: QuizQuestionProps) {
+  const speak = useSpeech();
   const isCorrect = selectedAnswer === question.correctAnswer;
   const showFeedback = selectedAnswer !== null;
+  const pronunciation = question.word.pronunciation || question.word.word;
 
   return (
     <Card className="max-w-2xl mx-auto">
@@ -34,9 +37,17 @@ export function QuizQuestion({
         <CardTitle className="text-2xl text-center">
           What is the meaning of <span className="font-bold text-primary">{question.word.word}</span>?
         </CardTitle>
-        <p className="text-sm text-muted-foreground text-center">
-          {question.word.pronunciation}
-        </p>
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <span>{pronunciation}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={() => speak(question.word.word)}
+          >
+            <Volume2 className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         <RadioGroup
