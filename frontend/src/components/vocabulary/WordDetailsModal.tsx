@@ -1,25 +1,25 @@
-
-import { useState } from 'react'
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Vocabulary } from '@/types'
-import { Volume2, Bookmark, ArrowLeft } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Vocabulary } from '@/types';
+import { Volume2, Bookmark, ArrowLeft } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useSpeech } from '@/hooks/useSpeech';
 
 interface WordDetailsModalProps {
-  word: Vocabulary | null
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  allWords: Vocabulary[]
-  isBookmarked?: boolean
-  onBookmarkToggle?: () => void
-  onWordSelect: (word: Vocabulary) => void
+  word: Vocabulary | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  allWords: Vocabulary[];
+  isBookmarked?: boolean;
+  onBookmarkToggle?: () => void;
+  onWordSelect: (word: Vocabulary) => void;
 }
 
 export function WordDetailsModal({
@@ -31,68 +31,48 @@ export function WordDetailsModal({
   onBookmarkToggle,
   onWordSelect,
 }: WordDetailsModalProps) {
-  const [view, setView] = useState<'detail' | 'category'>('detail')
-  const [selectedLetter, setSelectedLetter] = useState<string | null>(null)
+  const speak = useSpeech();
+  const [view, setView] = useState<'detail' | 'category'>('detail');
+  const [selectedLetter, setSelectedLetter] = useState<string | null>(null);
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      setView('detail')
-      setSelectedLetter(null)
-    }
-    onOpenChange(open)
-  }
+  if (!word) return null;
 
-  if (!word) return null
-
-  const speak = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(word.word)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-      window.speechSynthesis.speak(utterance)
-    }
-  }
-
-  const openCategory = (letter: string) => {
-    setSelectedLetter(letter)
-    setView('category')
-  }
+  const handleLetterClick = (letter: string) => {
+    setSelectedLetter(letter);
+    setView('category');
+  };
 
   const wordsInCategory = selectedLetter
     ? allWords.filter(
         (w) => (w.alphabet || w.word[0].toUpperCase()) === selectedLetter
       )
-    : []
+    : [];
 
   const goBackToDetail = () => {
-    setView('detail')
-  }
+    setView('detail');
+  };
 
   const selectWord = (w: Vocabulary) => {
-    onWordSelect(w)
-    setView('detail')
-  }
-
-  const letter = word.alphabet || word.word[0].toUpperCase()
+    onWordSelect(w);
+    setView('detail');
+  };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
         {view === 'detail' ? (
-          // === DETAIL VIEW ===
           <>
             <DialogHeader>
               <DialogTitle className="text-2xl flex items-center gap-2">
-                {/* Clickable letter */}
                 <button
-                  onClick={() => openCategory(letter)}
+                  onClick={() => handleLetterClick(word.alphabet || word.word[0].toUpperCase())}
                   className="text-3xl font-bold text-muted-foreground hover:text-primary transition-colors"
-                  title={`View all words starting with "${letter}"`}
+                  title="View all words starting with this letter"
                 >
-                  {/* {letter} */}
+                  {word.alphabet || word.word[0].toUpperCase()}
                 </button>
                 <span className="text-2xl">{word.word}</span>
-                <Button variant="ghost" size="icon" onClick={speak} className="h-8 w-8">
+                <Button variant="ghost" size="icon" onClick={() => speak(word.word)} className="h-8 w-8">
                   <Volume2 className="h-4 w-4" />
                 </Button>
               </DialogTitle>
@@ -113,7 +93,7 @@ export function WordDetailsModal({
                 <p className="text-sm italic">"{word.sentence}"</p>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Word Smart {word.book}</span>
+                <span>Book {word.book}</span>
                 <span>•</span>
                 <span>Lesson {word.lesson}</span>
                 <span>•</span>
@@ -131,7 +111,6 @@ export function WordDetailsModal({
             </div>
           </>
         ) : (
-          // === CATEGORY VIEW ===
           <>
             <DialogHeader className="flex flex-row items-center gap-2">
               <Button variant="ghost" size="icon" onClick={goBackToDetail}>
@@ -165,20 +144,8 @@ export function WordDetailsModal({
         )}
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
