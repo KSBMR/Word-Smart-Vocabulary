@@ -207,12 +207,13 @@ export default function QuizPage() {
       </div>
       {currentQuestion && (
         mode === 'meaning' ? (
-          <QuizQuestion
-            question={currentQuestion as any} // Type assertion because TypeScript can't narrow the union
+         <QuizQuestion
+            question={currentQuestion as any}
             selectedAnswer={selectedAnswer}
             onAnswer={answer}
             onNext={next}
             isLast={currentQuestion.index === totalQuestions - 1}
+            totalQuestions={totalQuestions} // ADD THIS
           />
         ) : (
           <AnalogyQuestion
@@ -221,6 +222,7 @@ export default function QuizPage() {
             onAnswer={answer}
             onNext={next}
             isLast={currentQuestion.index === totalQuestions - 1}
+            totalQuestions={totalQuestions} // ADD THIS
           />
         )
       )}

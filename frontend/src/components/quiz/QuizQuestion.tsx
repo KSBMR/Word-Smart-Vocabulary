@@ -17,6 +17,7 @@ interface QuizQuestionProps {
   onAnswer: (option: string) => void;
   onNext: () => void;
   isLast: boolean;
+  totalQuestions: number; // NEW
 }
 
 export function QuizQuestion({
@@ -25,6 +26,7 @@ export function QuizQuestion({
   onAnswer,
   onNext,
   isLast,
+  totalQuestions,
 }: QuizQuestionProps) {
   const speak = useSpeech();
   const isCorrect = selectedAnswer === question.correctAnswer;
@@ -34,7 +36,17 @@ export function QuizQuestion({
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl text-center">
+        <div className="flex justify-between items-center text-sm text-muted-foreground">
+          <span>Question {question.index + 1} of {totalQuestions}</span>
+          <span>{Math.round(((question.index + 1) / totalQuestions) * 100)}%</span>
+        </div>
+        <div className="w-full bg-muted rounded-full h-1.5">
+          <div
+            className="bg-primary h-1.5 rounded-full transition-all"
+            style={{ width: `${((question.index + 1) / totalQuestions) * 100}%` }}
+          />
+        </div>
+        <CardTitle className="text-2xl text-center mt-4">
           What is the meaning of <span className="font-bold text-primary">{question.word.word}</span>?
         </CardTitle>
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
