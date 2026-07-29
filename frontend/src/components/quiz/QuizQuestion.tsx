@@ -6,13 +6,11 @@ import { CheckCircle, XCircle, Volume2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSpeech } from '@/hooks/useSpeech';
 
-interface AnalogyQuestionProps {
+interface QuizQuestionProps {
   question: {
-    word1: Vocabulary;
-    meaning1: string;
-    word2: Vocabulary;
+    word: Vocabulary;
     options: string[];
-    correctMeaning: string;
+    correctAnswer: string;
     index: number;
   };
   selectedAnswer: string | null;
@@ -21,52 +19,34 @@ interface AnalogyQuestionProps {
   isLast: boolean;
 }
 
-export function AnalogyQuestion({
+export function QuizQuestion({
   question,
   selectedAnswer,
   onAnswer,
   onNext,
   isLast,
-}: AnalogyQuestionProps) {
+}: QuizQuestionProps) {
   const speak = useSpeech();
-  const isCorrect = selectedAnswer === question.correctMeaning;
+  const isCorrect = selectedAnswer === question.correctAnswer;
   const showFeedback = selectedAnswer !== null;
-
-  const handleSpeak = (word: string) => {
-    speak(word);
-  };
+  const pronunciation = question.word.pronunciation || question.word.word;
 
   return (
     <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-lg font-medium text-muted-foreground text-center">
-          Complete the Analogy
+        <CardTitle className="text-2xl text-center">
+          What is the meaning of <span className="font-bold text-primary">{question.word.word}</span>?
         </CardTitle>
-        <div className="text-center text-xl md:text-2xl font-semibold space-y-2">
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span className="font-bold text-primary">{question.word1.word}</span>
-            <span className="text-muted-foreground">:</span>
-            <span className="italic text-muted-foreground">{question.meaning1}</span>
-          </div>
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span className="text-muted-foreground text-sm">as</span>
-          </div>
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span className="font-bold text-primary">{question.word2.word}</span>
-            <span className="text-muted-foreground">:</span>
-            <span className="text-muted-foreground">?</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={() => handleSpeak(question.word2.word)}
-            >
-              <Volume2 className="h-4 w-4" />
-            </Button>
-          </div>
-          <p className="text-xs text-muted-foreground mt-1">
-            {question.word2.pronunciation}
-          </p>
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <span>{pronunciation}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6"
+            onClick={() => speak(question.word.word)}
+          >
+            <Volume2 className="h-4 w-4" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -78,7 +58,7 @@ export function AnalogyQuestion({
         >
           {question.options.map((option, idx) => {
             const isSelected = selectedAnswer === option;
-            const isCorrectOption = option === question.correctMeaning;
+            const isCorrectOption = option === question.correctAnswer;
             return (
               <div
                 key={idx}
@@ -103,16 +83,16 @@ export function AnalogyQuestion({
         {showFeedback && (
           <div className="mt-4 p-3 bg-muted rounded-lg space-y-2">
             <div>
-              <span className="font-medium">Bangla meaning of {question.word2.word}:</span>{' '}
-              {question.word2.banglaMeaning}
+              <span className="font-medium">Bangla meaning:</span>{' '}
+              {question.word.banglaMeaning}
             </div>
             <div>
               <span className="font-medium">Example:</span>{' '}
-              <span className="italic">"{question.word2.sentence}"</span>
+              <span className="italic">"{question.word.sentence}"</span>
             </div>
             {!isCorrect && (
               <div className="text-sm text-red-500">
-                Correct answer: <span className="font-medium">{question.correctMeaning}</span>
+                Correct answer: <span className="font-medium">{question.correctAnswer}</span>
               </div>
             )}
           </div>
