@@ -21,15 +21,21 @@ export default function AssessmentPage() {
     if (!transcript) return;
     setLoadingSpeech(true);
     try {
-      const res = await fetch(`${API_URL}/api/speaking-assessment/`, {
+      const res = await fetch(`${API_URL}/api/speech-assessment/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript })
+        body: JSON.stringify({ text: transcript })
       });
+      // Check if response is OK, else throw with status
+      if (!res.ok) {
+        const text = await res.text(); // get HTML or error message
+        throw new Error(`Server responded with ${res.status}: ${text.slice(0, 100)}`);
+      }
       const data = await res.json();
       setSpeechFeedback(data);
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      console.error('Speech assessment error:', err);
+      setSpeechFeedback({ error: err.message || 'Failed to assess speech.' });
     } finally {
       setLoadingSpeech(false);
     }
@@ -37,22 +43,28 @@ export default function AssessmentPage() {
 
   // --- Writing ---
   const assessWriting = async () => {
-    if (!writingText) return;
-    setLoadingWriting(true);
-    try {
-      const res = await fetch(`${API_URL}/api/writing-assessment/`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: writingText })
-      });
-      const data = await res.json();
-      setWritingFeedback(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingWriting(false);
+  if (!writingText) return;
+  setLoadingWriting(true);
+  try {
+    const res = await fetch(`${API_URL}/api/writing-assessment/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: writingText })
+    });
+    // Check if response is OK, else throw with status
+    if (!res.ok) {
+      const text = await res.text(); // get HTML or error message
+      throw new Error(`Server responded with ${res.status}: ${text.slice(0, 100)}`);
     }
-  };
+    const data = await res.json();
+    setWritingFeedback(data);
+  } catch (err: any) {
+    console.error('Writing assessment error:', err);
+    setWritingFeedback({ error: err.message || 'Failed to assess writing.' });
+  } finally {
+    setLoadingWriting(false);
+  }
+};
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto px-4 py-6">
