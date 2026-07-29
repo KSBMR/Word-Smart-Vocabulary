@@ -12,4 +12,6 @@ urlpatterns = [
     path('api/bookmarks/', BookmarkView.as_view(), name='bookmarks'),
     path('api/weekly-activity/', WeeklyActivityView.as_view(), name='weekly_activity'),
     path('health/', health_check, name='health_check'),
+    path('admin/', admin.site.urls),
+    path('api/', include('ai_assessment.urls')),
 ]

@@ -3,8 +3,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Mic, MicOff, PenTool, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Mic, MicOff, PenTool, Loader2 } from 'lucide-react';
 import { useSpeechToText } from '@/hooks/useSpeechToText';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function AssessmentPage() {
   const { transcript, isListening, error, startListening } = useSpeechToText();
@@ -19,7 +21,7 @@ export default function AssessmentPage() {
     if (!transcript) return;
     setLoadingSpeech(true);
     try {
-      const res = await fetch('/api/speaking-assessment/', {
+      const res = await fetch(`${API_URL}/api/speaking-assessment/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transcript })
@@ -38,7 +40,7 @@ export default function AssessmentPage() {
     if (!writingText) return;
     setLoadingWriting(true);
     try {
-      const res = await fetch('/api/writing-assessment/', {
+      const res = await fetch(`${API_URL}/api/writing-assessment/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: writingText })
