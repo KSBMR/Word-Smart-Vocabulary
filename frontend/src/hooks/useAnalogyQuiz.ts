@@ -1,13 +1,20 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Vocabulary } from '@/types';
 
 export type AnalogyQuestion = {
   word1: Vocabulary;
-  meaning1: string;
+  meaning1: string; // shortened
   word2: Vocabulary;
   options: string[];
   correctMeaning: string;
   index: number;
+};
+
+// Helper to get a concise meaning (first part before ; / ,)
+const getConciseMeaning = (meaning: string): string => {
+  // Split by common delimiters and take the first non-empty part
+  const parts = meaning.split(/[;/,]/).map(s => s.trim()).filter(s => s.length > 0);
+  return parts.length > 0 ? parts[0] : meaning;
 };
 
 export function useAnalogyQuiz(words: Vocabulary[]) {
@@ -21,13 +28,15 @@ export function useAnalogyQuiz(words: Vocabulary[]) {
     const shuffled = [...words].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, Math.min(numQuestions * 2, shuffled.length));
 
-    // Pair up words: [0,1], [2,3], ...
     const pairs: [Vocabulary, Vocabulary][] = [];
     for (let i = 0; i < selected.length - 1; i += 2) {
       pairs.push([selected[i], selected[i + 1]]);
     }
 
     const qs: AnalogyQuestion[] = pairs.map(([w1, w2], idx) => {
+      // Get concise meaning for word1
+      const conciseMeaning1 = getConciseMeaning(w1.englishMeaning);
+
       // Get 3 wrong meanings from other words (excluding w2's meaning)
       const otherMeanings = words
         .filter(w => w.id !== w2.id)
@@ -35,11 +44,11 @@ export function useAnalogyQuiz(words: Vocabulary[]) {
       const shuffledMeanings = otherMeanings.sort(() => Math.random() - 0.5);
       const wrongOptions = shuffledMeanings.slice(0, 3);
       const options = [w2.englishMeaning, ...wrongOptions];
-      // Shuffle options
       const shuffledOptions = options.sort(() => Math.random() - 0.5);
+
       return {
         word1: w1,
-        meaning1: w1.englishMeaning,
+        meaning1: conciseMeaning1, // short version
         word2: w2,
         options: shuffledOptions,
         correctMeaning: w2.englishMeaning,
