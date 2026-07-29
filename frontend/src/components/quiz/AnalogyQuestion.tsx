@@ -20,7 +20,7 @@ interface AnalogyQuestionProps {
   onAnswer: (option: string) => void;
   onNext: () => void;
   isLast: boolean;
-  totalQuestions: number; // NEW
+  totalQuestions: number;
 }
 
 export function AnalogyQuestion({
@@ -31,7 +31,23 @@ export function AnalogyQuestion({
   isLast,
   totalQuestions,
 }: AnalogyQuestionProps) {
-  // ... existing state and handlers ...
+  const speak = useSpeech();
+  const [showHint, setShowHint] = useState(false);
+
+  // ✅ IMPORTANT: Define showFeedback here
+  const showFeedback = selectedAnswer !== null;
+  const isCorrect = selectedAnswer === question.correctMeaning;
+
+  const handleSpeak = (word: string) => {
+    speak(word);
+  };
+
+  const getHint = () => {
+    const meaning = question.correctMeaning;
+    const firstLetter = meaning.charAt(0).toUpperCase();
+    const length = meaning.length;
+    return `Starts with "${firstLetter}" and has ${length} letters.`;
+  };
 
   return (
     <Card className="max-w-2xl mx-auto border-2 shadow-lg">
@@ -55,21 +71,16 @@ export function AnalogyQuestion({
         {/* Analogy Expression */}
         <div className="bg-gradient-to-br from-muted/50 to-muted/20 rounded-xl p-6 border border-border/50">
           <div className="text-center space-y-3">
-            {/* Word1 : Meaning1 */}
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <span className="text-xl font-bold text-primary">{question.word1.word}</span>
               <span className="text-muted-foreground text-xl">:</span>
               <span className="text-base text-muted-foreground italic">{question.meaning1}</span>
             </div>
-
-            {/* "as" with arrow */}
             <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground uppercase tracking-wider">
               <span className="h-px w-8 bg-muted-foreground/30"></span>
               <span>as</span>
               <span className="h-px w-8 bg-muted-foreground/30"></span>
             </div>
-
-            {/* Word2 : ? */}
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <span className="text-xl font-bold text-primary">{question.word2.word}</span>
               <span className="text-muted-foreground text-xl">:</span>
@@ -149,8 +160,7 @@ export function AnalogyQuestion({
               <span>{question.word2.englishMeaning}</span>
             </div>
             <div>
-              <span className="font-medium">Bangla:</span>{' '}
-              {question.word2.banglaMeaning}
+              <span className="font-medium">Bangla:</span> {question.word2.banglaMeaning}
             </div>
             <div>
               <span className="font-medium">Example:</span>{' '}
