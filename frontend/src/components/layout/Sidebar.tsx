@@ -1,26 +1,26 @@
-import { NavLink } from 'react-router-dom'
-import { cn } from '@/lib/utils'
+import { NavLink } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import {
   Home,
   Library,
-  Layers,
+  Mic,
   FileQuestion,
   RefreshCw,
   Bookmark,
   BarChart,
   Settings,
-} from 'lucide-react'
+} from 'lucide-react';
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/vocabulary', label: 'Vocabulary', icon: Library },
-  { to: '/flashcards', label: 'Flashcards', icon: Layers },
+  { to: '/assessment', label: 'Assessment', icon: Mic },
   { to: '/quiz', label: 'Quiz', icon: FileQuestion },
   { to: '/revision', label: 'Revision', icon: RefreshCw },
   { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
   { to: '/progress', label: 'Progress', icon: BarChart },
   { to: '/settings', label: 'Settings', icon: Settings },
-]
+];
 
 export default function Sidebar() {
   return (
@@ -43,5 +43,5 @@ export default function Sidebar() {
         </NavLink>
       ))}
     </nav>
-  )
+  );
 }

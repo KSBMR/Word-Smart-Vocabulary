@@ -1,12 +1,11 @@
-// src/components/layout/MobileNav.tsx
 import { NavLink } from 'react-router-dom';
-import { Home, Library, Layers, FileQuestion, Bookmark } from 'lucide-react';
+import { Home, Library, Mic, FileQuestion, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/vocabulary', label: 'Words', icon: Library },
-  { to: '/flashcards', label: 'Cards', icon: Layers },
+  { to: '/assessment', label: 'Assessment', icon: Mic },
   { to: '/quiz', label: 'Quiz', icon: FileQuestion },
   { to: '/bookmarks', label: 'Saved', icon: Bookmark },
 ];

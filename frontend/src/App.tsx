@@ -10,6 +10,7 @@ import RevisionPage from '@/pages/RevisionPage';
 import BookmarksPage from '@/pages/BookmarksPage';
 import ProgressPage from '@/pages/ProgressPage';
 import SettingsPage from '@/pages/SettingsPage';
+import AssessmentPage from '@/pages/AssessmentPage';
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/bookmarks" element={<BookmarksPage />} />
               <Route path="/progress" element={<ProgressPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/assessment" element={<AssessmentPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
