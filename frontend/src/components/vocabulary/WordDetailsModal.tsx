@@ -37,11 +37,6 @@ export function WordDetailsModal({
 
   if (!word) return null;
 
-  const handleLetterClick = (letter: string) => {
-    setSelectedLetter(letter);
-    setView('category');
-  };
-
   const wordsInCategory = selectedLetter
     ? allWords.filter(
         (w) => (w.alphabet || w.word[0].toUpperCase()) === selectedLetter
@@ -64,13 +59,7 @@ export function WordDetailsModal({
           <>
             <DialogHeader>
               <DialogTitle className="text-2xl flex items-center gap-2">
-                <button
-                  onClick={() => handleLetterClick(word.alphabet || word.word[0].toUpperCase())}
-                  className="text-3xl font-bold text-muted-foreground hover:text-primary transition-colors"
-                  title="View all words starting with this letter"
-                >
-                  {word.alphabet || word.word[0].toUpperCase()}
-                </button>
+                {/* The letter button is REMOVED – only the word is shown */}
                 <span className="text-2xl">{word.word}</span>
                 <Button variant="ghost" size="icon" onClick={() => speak(word.word)} className="h-8 w-8">
                   <Volume2 className="h-4 w-4" />
@@ -93,7 +82,7 @@ export function WordDetailsModal({
                 <p className="text-sm italic">"{word.sentence}"</p>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>Book {word.book}</span>
+                <span>Word Smart {word.book}</span>
                 <span>•</span>
                 <span>Lesson {word.lesson}</span>
                 <span>•</span>
@@ -111,6 +100,7 @@ export function WordDetailsModal({
             </div>
           </>
         ) : (
+          // Category view – still accessible if needed (you can remove this if you want)
           <>
             <DialogHeader className="flex flex-row items-center gap-2">
               <Button variant="ghost" size="icon" onClick={goBackToDetail}>
@@ -146,7 +136,6 @@ export function WordDetailsModal({
     </Dialog>
   );
 }
-
 
 
 // import { useState } from 'react'
