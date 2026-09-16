@@ -9,23 +9,27 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-az+tyq#mmt%01g+#-8hcx71b(8ari@j&g9lx$*@c_7#h!ii&5r'
+# SECRET_KEY = '-87&3o=1k1zs+t_7026lg7x#9jpc-@ug3f91rxyh8z!y(qiw81'
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-key')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['word-smart-backend.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['WordSmartVocab.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -57,8 +61,7 @@ MIDDLEWARE = [
 
 # Allow frontend URL (Vercel)
 CORS_ALLOWED_ORIGINS = [
-    'https://word-smart-backend.onrender.com',      # not needed, but harmless
-    'https://word-smart-vocabulary.vercel.app',     # <-- your frontend
+    'https://word-smart-vocabulary.vercel.app',
     'http://localhost:5173',
 ]
 
