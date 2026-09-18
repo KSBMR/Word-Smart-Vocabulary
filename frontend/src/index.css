@@ -4,7 +4,6 @@
 
 @layer base {
   :root {
-    /* Light Theme */
     --background: 220 20% 98%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
@@ -71,28 +70,18 @@
     @apply border-border;
   }
 
-  /* ============ HTML: scroll normal থাকবে ============ */
+  /* ============ ONLY THESE 3 LINES ============ */
   html {
     scroll-behavior: smooth;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    /* ❌ overflow-x: hidden — এখানে দেওয়া যাবে না */
-    /* ❌ overscroll-behavior — এখানে দেওয়া যাবে না */
   }
 
-  /* ============ BODY: scroll ও touch normal থাকবে ============ */
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
-    /* ❌ overflow-x: hidden — এখানে দেওয়া যাবে না */
-    /* ❌ overscroll-behavior-y: none — এখানে দেওয়া যাবে না */
-    /* ❌ touch-action: manipulation — এখানে দেওয়া যাবে না */
   }
 
-  /* ============ Scrollbar (desktop only) ============ */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
