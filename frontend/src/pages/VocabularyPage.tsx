@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useVocabulary } from '@/hooks/useVocabulary'
 import { useBookmarks } from '@/hooks/useBookmarks'
 import { VocabularyCard } from '@/components/vocabulary/VocabularyCard'
+import { WordDetailsModal } from '@/components/vocabulary/WordDetailsModal'
 import {
   Select,
   SelectContent,
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -16,10 +18,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Loader2, ArrowUp, Search, X } from 'lucide-react'
+import {
+  Grid2X2,
+  List,
+  Loader2,
+  ArrowUp,
+  Search,
+  X,
+} from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Vocabulary } from '@/types'
 import { useCoachMark } from '@/hooks/useCoachMark'
+import { useIsMobile } from '@/hooks/useIsMobile'
 
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -38,10 +48,14 @@ export default function VocabularyPage() {
   } = useVocabulary()
 
   const { isBookmarked, toggleBookmark } = useBookmarks()
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [selectedWord, setSelectedWord] = useState<Vocabulary | null>(null)
+  const [modalOpen, setModalOpen] = useState(false)
   const [letterPickerOpen, setLetterPickerOpen] = useState(false)
   const [showTopButton, setShowTopButton] = useState(false)
   const groupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
   const { shouldShowCoachMark, dismissCoachMark } = useCoachMark()
+  const isMobile = useIsMobile()
 
   // Back to top button visibility
   useEffect(() => {
@@ -52,7 +66,7 @@ export default function VocabularyPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Group words by alphabet
+  // Group words
   const groupedWords: { [key: string]: Vocabulary[] } = {}
   words.forEach((w) => {
     const letter = w.alphabet || w.word[0].toUpperCase()
@@ -71,6 +85,11 @@ export default function VocabularyPage() {
       return a.word.localeCompare(b.word)
     })
   })
+
+  const openWordDetails = (word: Vocabulary) => {
+    setSelectedWord(word)
+    setModalOpen(true)
+  }
 
   const scrollToLetter = (letter: string) => {
     const el = groupRefs.current[letter]
@@ -100,20 +119,51 @@ export default function VocabularyPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-          Vocabulary
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {filteredCount} words
-          {searchQuery && ` (filtered)`}
-          {!searchQuery && ` · ${totalWords} total`}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
+            Vocabulary
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {filteredCount} words
+            {searchQuery && ` (filtered)`}
+            {!searchQuery && ` · ${totalWords} total`}
+          </p>
+        </div>
+
+        {/* Grid/List toggle – DESKTOP ONLY */}
+        {!isMobile && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                'rounded-xl',
+                viewMode === 'grid' &&
+                  'gradient-bg text-white border-0 hover:opacity-90'
+              )}
+              onClick={() => setViewMode('grid')}
+            >
+              <Grid2X2 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className={cn(
+                'rounded-xl',
+                viewMode === 'list' &&
+                  'gradient-bg text-white border-0 hover:opacity-90'
+              )}
+              onClick={() => setViewMode('list')}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
@@ -134,7 +184,6 @@ export default function VocabularyPage() {
           )}
         </div>
 
-        {/* Filters */}
         <div className="flex gap-2">
           <Select
             value={selectedBook === 'all' ? 'all' : String(selectedBook)}
@@ -194,7 +243,14 @@ export default function VocabularyPage() {
 
               <div
                 ref={(el) => (groupRefs.current[letter] = el)}
-                className="mt-2 flex flex-col"
+                className={cn(
+                  'mt-2',
+                  isMobile
+                    ? 'flex flex-col'
+                    : viewMode === 'grid'
+                      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                      : 'space-y-3'
+                )}
               >
                 {groupedWords[letter].map((word, wordIndex) => (
                   <VocabularyCard
@@ -202,7 +258,9 @@ export default function VocabularyPage() {
                     word={word}
                     isBookmarked={isBookmarked(word.id)}
                     onBookmarkToggle={() => toggleBookmark(word.id)}
+                    onClick={openWordDetails}
                     showCoachMark={
+                      isMobile &&
                       shouldShowCoachMark &&
                       letterIndex === 0 &&
                       wordIndex === 0
@@ -216,7 +274,7 @@ export default function VocabularyPage() {
         </div>
       )}
 
-      {/* Back to Top Button */}
+      {/* Back to Top */}
       {showTopButton && (
         <button
           onClick={scrollToTop}
@@ -225,6 +283,23 @@ export default function VocabularyPage() {
         >
           <ArrowUp className="h-5 w-5" />
         </button>
+      )}
+
+      {/* Word Details Modal – DESKTOP ONLY */}
+      {!isMobile && (
+        <WordDetailsModal
+          word={selectedWord}
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          allWords={words}
+          isBookmarked={selectedWord ? isBookmarked(selectedWord.id) : false}
+          onBookmarkToggle={() => {
+            if (selectedWord) {
+              toggleBookmark(selectedWord.id)
+            }
+          }}
+          onWordSelect={openWordDetails}
+        />
       )}
 
       {/* Jump to Letter Dialog */}
