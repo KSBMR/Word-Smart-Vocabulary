@@ -6,12 +6,13 @@ import MobileNav from './MobileNav';
 export default function AppLayout() {
   return (
     <div className="min-h-screen bg-background">
-      {/* ============ DESKTOP SIDEBAR (always visible on md+) ============ */}
-      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:w-64 md:border-r md:border-border/60 md:bg-background md:z-40">
+      {/* ============ DESKTOP SIDEBAR ============ */}
+      {/* ⚠️ md:block — এটাই মূল fix */}
+      <aside className="hidden md:block md:fixed md:inset-y-0 md:left-0 md:w-64 md:border-r md:border-border/60 md:bg-background md:z-40">
         <Sidebar />
       </aside>
 
-      {/* ============ MOBILE HEADER (only on mobile) ============ */}
+      {/* ============ MOBILE HEADER ============ */}
       <MobileHeader />
 
       {/* ============ MAIN CONTENT ============ */}
