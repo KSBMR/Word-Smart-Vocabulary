@@ -163,3 +163,14 @@
     animation: flicker 1.5s ease-in-out infinite;
   }
 }
+
+@layer utilities {
+  @keyframes bounce-hint {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .animate-bounce-hint {
+    animation: bounce-hint 1.8s ease-in-out infinite;
+  }
+}

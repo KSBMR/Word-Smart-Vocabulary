@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { useVocabulary } from '@/hooks/useVocabulary'
 import { useBookmarks } from '@/hooks/useBookmarks'
 import { VocabularyCard } from '@/components/vocabulary/VocabularyCard'
-import { WordDetailsModal } from '@/components/vocabulary/WordDetailsModal'
 import {
   Select,
   SelectContent,
@@ -10,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -18,9 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Grid2X2, List, Loader2, ArrowUp, Search, X } from 'lucide-react'
+import { Loader2, ArrowUp, Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Vocabulary } from '@/types'
+import { useCoachMark } from '@/hooks/useCoachMark'
 
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -39,12 +38,10 @@ export default function VocabularyPage() {
   } = useVocabulary()
 
   const { isBookmarked, toggleBookmark } = useBookmarks()
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [selectedWord, setSelectedWord] = useState<Vocabulary | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
   const [letterPickerOpen, setLetterPickerOpen] = useState(false)
   const [showTopButton, setShowTopButton] = useState(false)
   const groupRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
+  const { shouldShowCoachMark, dismissCoachMark } = useCoachMark()
 
   // Back to top button visibility
   useEffect(() => {
@@ -75,11 +72,6 @@ export default function VocabularyPage() {
     })
   })
 
-  const openWordDetails = (word: Vocabulary) => {
-    setSelectedWord(word)
-    setModalOpen(true)
-  }
-
   const scrollToLetter = (letter: string) => {
     const el = groupRefs.current[letter]
     if (el) {
@@ -108,47 +100,18 @@ export default function VocabularyPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-            Vocabulary
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {filteredCount} words
-            {searchQuery && ` (filtered)`}
-            {!searchQuery && ` · ${totalWords} total`}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              'rounded-xl',
-              viewMode === 'grid' &&
-                'gradient-bg text-white border-0 hover:opacity-90'
-            )}
-            onClick={() => setViewMode('grid')}
-          >
-            <Grid2X2 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn(
-              'rounded-xl',
-              viewMode === 'list' &&
-                'gradient-bg text-white border-0 hover:opacity-90'
-            )}
-            onClick={() => setViewMode('list')}
-          >
-            <List className="h-4 w-4" />
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
+          Vocabulary
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          {filteredCount} words
+          {searchQuery && ` (filtered)`}
+          {!searchQuery && ` · ${totalWords} total`}
+        </p>
       </div>
 
-      {/* Search + Filters (ONLY ONE SET) */}
+      {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1">
@@ -207,7 +170,7 @@ export default function VocabularyPage() {
         </div>
       </div>
 
-      {/* Word Grid with Alphabet Grouping */}
+      {/* Word List with Alphabet Grouping */}
       {orderedLetters.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted-foreground">
@@ -216,9 +179,9 @@ export default function VocabularyPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {orderedLetters.map((letter) => (
+          {orderedLetters.map((letter, letterIndex) => (
             <div key={letter} className="scroll-mt-24">
-              {/* Sticky Letter Heading (top-0 since no header) */}
+              {/* Sticky Letter Heading */}
               <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-2">
                 <h3
                   className="text-3xl font-bold text-muted-foreground/50 cursor-pointer hover:text-primary transition-colors inline-block"
@@ -231,20 +194,20 @@ export default function VocabularyPage() {
 
               <div
                 ref={(el) => (groupRefs.current[letter] = el)}
-                className={cn(
-                  'mt-2',
-                  viewMode === 'grid'
-                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                    : 'space-y-3'
-                )}
+                className="mt-2 flex flex-col"
               >
-                {groupedWords[letter].map((word) => (
+                {groupedWords[letter].map((word, wordIndex) => (
                   <VocabularyCard
                     key={word.id}
                     word={word}
-                    onClick={openWordDetails}
                     isBookmarked={isBookmarked(word.id)}
                     onBookmarkToggle={() => toggleBookmark(word.id)}
+                    showCoachMark={
+                      shouldShowCoachMark &&
+                      letterIndex === 0 &&
+                      wordIndex === 0
+                    }
+                    onCoachDismiss={dismissCoachMark}
                   />
                 ))}
               </div>
@@ -263,21 +226,6 @@ export default function VocabularyPage() {
           <ArrowUp className="h-5 w-5" />
         </button>
       )}
-
-      {/* Word Details Modal */}
-      <WordDetailsModal
-        word={selectedWord}
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        allWords={words}
-        isBookmarked={selectedWord ? isBookmarked(selectedWord.id) : false}
-        onBookmarkToggle={() => {
-          if (selectedWord) {
-            toggleBookmark(selectedWord.id)
-          }
-        }}
-        onWordSelect={openWordDetails}
-      />
 
       {/* Jump to Letter Dialog */}
       <Dialog open={letterPickerOpen} onOpenChange={setLetterPickerOpen}>
