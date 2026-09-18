@@ -35,7 +35,6 @@
     --chart-5: 199 89% 48%;
     --radius: 0.75rem;
   }
-  
 
   .dark {
     --background: 222 47% 7%;
@@ -72,21 +71,28 @@
     @apply border-border;
   }
 
+  /* ============ HTML: scroll normal থাকবে ============ */
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* ❌ overflow-x: hidden — এখানে দেওয়া যাবে না */
+    /* ❌ overscroll-behavior — এখানে দেওয়া যাবে না */
+  }
+
+  /* ============ BODY: scroll ও touch normal থাকবে ============ */
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    /* ❌ overflow-x: hidden — এখানে দেওয়া যাবে না */
+    /* ❌ overscroll-behavior-y: none — এখানে দেওয়া যাবে না */
+    /* ❌ touch-action: manipulation — এখানে দেওয়া যাবে না */
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
-  ::selection {
-    background-color: hsl(var(--primary) / 0.2);
-  }
-
+  /* ============ Scrollbar (desktop only) ============ */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -104,50 +110,11 @@
   ::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground) / 0.5);
   }
-    html {
-      scroll-behavior: smooth;
-      /* Prevent horizontal scroll */
-      overflow-x: hidden;
-      /* Better mobile tap behavior */
-      -webkit-text-size-adjust: 100%;
-      text-size-adjust: 100%;
-    }
 
-    body {
-      @apply bg-background text-foreground;
-      font-feature-settings: "rlig" 1, "calt" 1;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-
-      /* Prevent bounce/rubber-band scroll on iOS */
-      overscroll-behavior-y: none;
-
-      /* Prevent horizontal overflow */
-      overflow-x: hidden;
-
-      /* Disable tap highlight on mobile */
-      -webkit-tap-highlight-color: transparent;
-
-      /* Better touch scrolling */
-      -webkit-overflow-scrolling: touch;
-
-      /* Prevent text size adjust on rotate */
-      text-size-adjust: 100%;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    /* Better tap feedback */
-    button, a, [role="button"] {
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
-    }
-
-    /* Prevent long-press context menu (except on text selection) */
-    img, button {
-      -webkit-touch-callout: none;
-      user-select: none;
-    }
+  ::selection {
+    background-color: hsl(var(--primary) / 0.2);
   }
+}
 
 @layer components {
   .text-gradient {
@@ -172,6 +139,7 @@
 }
 
 @layer utilities {
+  /* ============ Animations ============ */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
@@ -192,6 +160,11 @@
     100% { transform: scale(1.4); opacity: 0; }
   }
 
+  @keyframes bounce-hint {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -4px, 0); }
+  }
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
   }
@@ -205,31 +178,18 @@
   .animate-flicker {
     animation: flicker 1.5s ease-in-out infinite;
   }
-}
-
-@layer utilities {
-  @keyframes bounce-hint {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
-  }
 
   .animate-bounce-hint {
     animation: bounce-hint 1.8s ease-in-out infinite;
   }
-  
-}
 
-@layer utilities {
-  /* ... existing bounce-hint ... */
-
-  /* GPU acceleration for smooth animations */
+  /* ============ GPU acceleration ============ */
   .gpu-accelerate {
     transform: translateZ(0);
-    will-change: transform, opacity;
     backface-visibility: hidden;
   }
 
-  /* Disable heavy blur on mobile (poor performance) */
+  /* ============ Mobile: reduce heavy blur ============ */
   @media (max-width: 768px) {
     .backdrop-blur-sm,
     .backdrop-blur,
