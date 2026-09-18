@@ -66,14 +66,12 @@ export function VocabularyCard({
         <div
           onClick={handleCardTap}
           className={cn(
-            'relative rounded-2xl border-2 bg-card p-4 cursor-pointer',
-            'transition-all duration-300 ease-out',
+            'relative rounded-2xl border-2 bg-card p-4 cursor-pointer gpu-accelerate',
+            'transition-[border-color,box-shadow] duration-200 ease-out',  // ← শুধু border ও shadow animate
             expanded
               ? 'border-primary shadow-lg shadow-primary/15'
-              : 'border-border hover:border-primary/40',
-            showCoachMark &&
-              !expanded &&
-              'border-primary shadow-lg shadow-primary/20'
+              : 'border-border',
+            showCoachMark && !expanded && 'border-primary shadow-lg shadow-primary/20'
           )}
         >
           <div className="flex items-start gap-3">
@@ -123,26 +121,26 @@ export function VocabularyCard({
           </div>
 
           {/* Peek preview */}
-          <div
-            className={cn(
-              'overflow-hidden transition-all duration-300',
-              expanded
-                ? 'max-h-0 opacity-0 mt-0 pt-0 border-t-0'
-                : 'max-h-10 opacity-75 mt-2.5 pt-2.5 border-t border-dashed border-border'
-            )}
-          >
+            <div
+              className={cn(
+                'overflow-hidden transition-[max-height,opacity] duration-200 ease-out',
+                expanded
+                  ? 'max-h-0 opacity-0'
+                  : 'max-h-10 opacity-75 mt-2.5 pt-2.5 border-t border-dashed border-border'
+              )}
+            >
             <p className="text-[11px] italic text-muted-foreground truncate">
               "{word.sentence}"
             </p>
           </div>
 
           {/* Expanded content */}
-          <div
-            className={cn(
-              'overflow-hidden transition-all duration-300 ease-out',
-              expanded ? 'max-h-[500px] opacity-100 mt-3.5' : 'max-h-0 opacity-0'
-            )}
-          >
+            <div
+              className={cn(
+                'overflow-hidden transition-[max-height,opacity] duration-300 ease-out',
+                expanded ? 'max-h-[500px] opacity-100 mt-3.5' : 'max-h-0 opacity-0'
+              )}
+            >
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
               Example
             </p>
@@ -162,8 +160,8 @@ export function VocabularyCard({
         {/* Coach Mark */}
         {showCoachMark && (
           <div
-            className="absolute top-[calc(100%+6px)] right-3 z-30 px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-xl whitespace-nowrap animate-bounce-hint"
-            style={{ background: '#0F172A' }}
+            className="absolute top-[calc(100%+6px)] right-3 z-30 px-3 py-2 rounded-lg text-[11px] font-semibold text-white shadow-xl whitespace-nowrap animate-bounce-hint gpu-accelerate"
+            style={{ background: '#0F172A', transform: 'translateZ(0)' }}
           >
             👆 Tap করুন, example দেখুন
             <div

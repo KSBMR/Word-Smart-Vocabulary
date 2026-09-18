@@ -231,7 +231,7 @@ export default function VocabularyPage() {
           {orderedLetters.map((letter, letterIndex) => (
             <div key={letter} className="scroll-mt-24">
               {/* Sticky Letter Heading */}
-              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm py-2 -mx-2 px-2">
+              <div className="sticky top-0 z-20 bg-background md:bg-background/95 md:backdrop-blur-sm py-2 -mx-2 px-2">
                 <h3
                   className="text-3xl font-bold text-muted-foreground/50 cursor-pointer hover:text-primary transition-colors inline-block"
                   onClick={() => setLetterPickerOpen(true)}
