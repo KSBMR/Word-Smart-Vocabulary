@@ -6,10 +6,15 @@ import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
 const navItems = [
   { to: '/', label: 'Home', emoji: '🏠' },
   { to: '/vocabulary', label: 'Vocabulary', emoji: '📚' },
   { to: '/assessment', label: 'Assessment', emoji: '🎙️' },
+  { to: '/ai-agent', label: 'AI Coach', emoji: '✨' },
   { to: '/quiz', label: 'Quiz', emoji: '🧠' },
   { to: '/revision', label: 'Revision', emoji: '🔄' },
   { to: '/bookmarks', label: 'Bookmarks', emoji: '🔖' },
@@ -17,26 +22,29 @@ const navItems = [
   { to: '/settings', label: 'Settings', emoji: '⚙️' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: SidebarProps) {
   const { user, isAuthenticated, logout } = useAuth();
   const { resolvedTheme, setTheme } = useTheme();
   const { openModal } = useAuthModal();
+
+  const handleNavigate = () => {
+    onNavigate?.();
+  };
 
   return (
     <nav className="flex h-full flex-col p-3 gap-0.5 overflow-y-auto">
       {/* Logo */}
       <Link
         to="/"
-        className="flex items-center gap-3 px-3 py-3 mb-4 rounded-xl hover:bg-muted/60 transition-colors"
+        onClick={handleNavigate}
+        className="flex items-center gap-2.5 px-3 py-2.5 mb-3 rounded-xl hover:bg-muted/60 transition-colors"
       >
-        <div>
-          <img src="/favicon.jpg" alt="Word Smart Logo" className="w-16 h-16 rounded-xl " />
+        <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-md shadow-primary/20">
+          <span className="text-white font-bold text-base">W</span>
         </div>
         <div className="min-w-0">
-          <p className="font-extrabold text-lg tracking-tight leading-tight">
-            Word Smart
-          </p>
-          <p className="text-xs text-muted-foreground leading-tight">
+          <p className="font-bold text-sm tracking-tight">Word Smart</p>
+          <p className="text-[10px] text-muted-foreground">
             Vocabulary Learning
           </p>
         </div>
@@ -48,6 +56,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
+            onClick={handleNavigate}
             className={({ isActive }) =>
               cn(
                 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
@@ -75,10 +84,12 @@ export default function Sidebar() {
           <span className="text-lg leading-none">
             {resolvedTheme === 'dark' ? '☀️' : '🌙'}
           </span>
-          <span>{resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+          <span>
+            {resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+          </span>
         </button>
 
-        {/* User Card / Login */}
+        {/* User / Login */}
         {isAuthenticated ? (
           <div className="p-3 rounded-xl bg-muted/60 border border-border/60">
             <div className="flex items-center gap-2.5 mb-2">
@@ -95,7 +106,10 @@ export default function Sidebar() {
               </div>
             </div>
             <button
-              onClick={logout}
+              onClick={() => {
+                logout();
+                handleNavigate();
+              }}
               className="w-full flex items-center justify-center gap-2 rounded-lg py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -104,7 +118,10 @@ export default function Sidebar() {
           </div>
         ) : (
           <Button
-            onClick={() => openModal('login')}
+            onClick={() => {
+              openModal('login');
+              handleNavigate();
+            }}
             className="w-full gradient-bg hover:opacity-90 text-white shadow-md shadow-primary/20 gap-2 h-10 rounded-xl"
           >
             <User className="h-4 w-4" />
