@@ -51,9 +51,6 @@ export function useVocabulary() {
       case 'random':
         result = result.sort(() => Math.random() - 0.5)
         break
-      case 'newest':
-        result.sort((a, b) => b.id - a.id)
-        break
     }
 
     return result

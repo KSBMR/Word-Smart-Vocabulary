@@ -1,4 +1,4 @@
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthContext';
 import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,10 +9,14 @@ interface ProtectedPageProps {
 
 export function ProtectedPage({ children }: ProtectedPageProps) {
   const { isAuthenticated, loading } = useAuth();
-  const { open } = useAuthModal();
+  const { openModal } = useAuthModal();
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-[60vh]">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -26,7 +30,10 @@ export function ProtectedPage({ children }: ProtectedPageProps) {
             <p className="text-muted-foreground mb-4">
               You need to login or sign up to access this page.
             </p>
-            <Button onClick={() => open('login')} className="w-full">
+            <Button
+              onClick={() => openModal('login')}
+              className="w-full gradient-bg"
+            >
               Login / Sign Up
             </Button>
           </CardContent>
