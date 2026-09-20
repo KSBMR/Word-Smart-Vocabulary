@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { AnalogyQuestion } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -9,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { CheckCircle, XCircle, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { cleanAnalogyItem } from '@/utils/cleanText';
 
 interface AnalogyFileQuestionProps {
   question: AnalogyQuestion;
@@ -32,6 +34,9 @@ export function AnalogyFileQuestion({
   const isCorrect = selectedAnswer === question.answer;
   const showFeedback = selectedAnswer !== null;
 
+  // ✅ Clean Bangla/Hindi from question + options (before answer)
+  const cleaned = useMemo(() => cleanAnalogyItem(question), [question]);
+
   const optionKeys = Object.keys(question.options) as Array<
     keyof typeof question.options
   >;
@@ -39,7 +44,7 @@ export function AnalogyFileQuestion({
   return (
     <Card className="border-border shadow-lg">
       <CardHeader className="pb-4">
-        {/* Progress */}
+        {/* Progress bar */}
         <div className="flex justify-between items-center text-xs text-muted-foreground mb-2">
           <span>
             Question {questionIndex + 1} of {totalQuestions}
@@ -57,20 +62,33 @@ export function AnalogyFileQuestion({
           />
         </div>
 
+        {/* Analogy tag */}
         <div className="flex justify-center mb-3">
           <div className="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full font-semibold uppercase tracking-wider">
             🔗 Analogy
           </div>
         </div>
 
-        <CardTitle className="text-lg sm:text-xl md:text-2xl text-center leading-relaxed">
-          {question.question}
-        </CardTitle>
+        {/* Question title — cleaned before answer, full after */}
+        <div className="text-center">
+          <CardTitle className="text-lg sm:text-xl md:text-2xl leading-relaxed">
+            {showFeedback ? question.question : cleaned.cleanedQuestion}
+          </CardTitle>
+
+          {/* Bangla hint (only after answer) */}
+          {showFeedback && cleaned.banglaQuestion && (
+            <p className="text-[11px] sm:text-xs text-muted-foreground mt-2 leading-relaxed">
+              {cleaned.banglaQuestion}
+            </p>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent className="space-y-2 sm:space-y-3">
         {optionKeys.map((key) => {
-          const value = question.options[key];
+          const originalValue = question.options[key];
+          const cleanedValue = cleaned.cleanedOptions[key];
+          const banglaValue = cleaned.banglaOptions[key];
           const isSelected = selectedAnswer === key;
           const isCorrectOption = key === question.answer;
 
@@ -93,6 +111,7 @@ export function AnalogyFileQuestion({
                   'border-border hover:border-primary/50 hover:bg-muted/40 cursor-pointer active:scale-[0.99]'
               )}
             >
+              {/* Option key badge */}
               <span
                 className={cn(
                   'w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs shrink-0',
@@ -105,14 +124,36 @@ export function AnalogyFileQuestion({
               >
                 {key}
               </span>
-              <span
-                className={cn(
-                  'flex-1 text-[13px] sm:text-sm leading-snug pt-0.5',
-                  showFeedback && isCorrectOption && 'font-semibold'
+
+              {/* Option text */}
+              <div className="flex-1 min-w-0 pt-0.5">
+                <p
+                  className={cn(
+                    'text-[13px] sm:text-sm leading-snug',
+                    showFeedback && isCorrectOption && 'font-semibold'
+                  )}
+                >
+                  {showFeedback ? originalValue : cleanedValue}
+                </p>
+
+                {/* Bangla hint (only after answer) */}
+                {showFeedback && banglaValue && (
+                  <p
+                    className={cn(
+                      'text-[11px] mt-1 leading-snug',
+                      isCorrectOption
+                        ? 'text-emerald-600/80 dark:text-emerald-400/80'
+                        : isSelected && !isCorrect
+                          ? 'text-red-600/80 dark:text-red-400/80'
+                          : 'text-muted-foreground'
+                    )}
+                  >
+                    {banglaValue}
+                  </p>
                 )}
-              >
-                {value}
-              </span>
+              </div>
+
+              {/* Icons */}
               {showFeedback && isCorrectOption && (
                 <CheckCircle className="h-5 w-5 text-emerald-500 shrink-0" />
               )}
@@ -123,6 +164,7 @@ export function AnalogyFileQuestion({
           );
         })}
 
+        {/* Feedback box */}
         {showFeedback && (
           <div className="mt-4 p-3 sm:p-4 bg-muted/50 rounded-xl space-y-2 text-xs sm:text-sm border border-border">
             <div className="flex items-center gap-2">
@@ -131,7 +173,9 @@ export function AnalogyFileQuestion({
             </div>
             <div className="pt-2 border-t border-border/60">
               <span className="font-semibold">✨ Explanation:</span>{' '}
-              <span className="text-foreground/90">{question.explanation}</span>
+              <span className="text-foreground/90">
+                {question.explanation}
+              </span>
             </div>
           </div>
         )}

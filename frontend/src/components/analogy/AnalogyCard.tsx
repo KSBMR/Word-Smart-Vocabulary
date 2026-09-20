@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { AnalogyQuestion } from '@/types';
 import { cn } from '@/lib/utils';
 import { CheckCircle2, ChevronDown, Eye, Sparkles } from 'lucide-react';
+import { cleanAnalogyItem } from '@/utils/cleanText';
 
 interface AnalogyCardProps {
   question: AnalogyQuestion;
@@ -18,6 +19,8 @@ export function AnalogyCard({
 }: AnalogyCardProps) {
   const [expanded, setExpanded] = useState(false);
 
+  const cleaned = useMemo(() => cleanAnalogyItem(question), [question]);
+
   const handleTap = () => {
     setExpanded((prev) => !prev);
     if (showCoachMark && onCoachDismiss) {
@@ -29,9 +32,7 @@ export function AnalogyCard({
     keyof typeof question.options
   >;
 
-  const correctAnswer = question.options[
-    question.answer as keyof typeof question.options
-  ];
+  const correctAnswerKey = question.answer;
 
   return (
     <div className="relative">
@@ -48,7 +49,7 @@ export function AnalogyCard({
             'border-primary ring-2 ring-primary/20 shadow-lg shadow-primary/20'
         )}
       >
-        {/* Top accent bar */}
+        {/* Top accent bar (only when expanded) */}
         <div
           className={cn(
             'h-1 w-full transition-all duration-300',
@@ -59,14 +60,9 @@ export function AnalogyCard({
         />
 
         <div className="p-4 md:p-5">
-          {/* Header row: number + status */}
+          {/* Header */}
           <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
-            <span
-              className={cn(
-                'text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md',
-                'bg-muted text-muted-foreground'
-              )}
-            >
+            <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
               Q#{question.sl}
             </span>
 
@@ -76,7 +72,7 @@ export function AnalogyCard({
               </span>
             )}
             {status === 'wrong' && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 font-bold flex items-center gap-1">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-red-500/15 text-red-600 dark:text-red-400 font-bold">
                 ✗ Wrong
               </span>
             )}
@@ -87,16 +83,25 @@ export function AnalogyCard({
             )}
           </div>
 
-          {/* Question */}
-          <p className="text-[15px] md:text-base font-bold mb-4 leading-snug tracking-tight">
-            {question.question}
-          </p>
+          {/* Question — cleaned when collapsed, original when expanded */}
+          <div className="mb-4">
+            <p className="text-[15px] md:text-base font-bold leading-snug tracking-tight">
+              {expanded ? question.question : cleaned.cleanedQuestion}
+            </p>
+            {expanded && cleaned.hasAnyBangla && cleaned.banglaQuestion && (
+              <p className="text-[11px] md:text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                {cleaned.banglaQuestion}
+              </p>
+            )}
+          </div>
 
           {/* Options */}
           <div className="space-y-1.5">
             {optionKeys.map((key) => {
-              const value = question.options[key];
-              const isCorrect = expanded && key === question.answer;
+              const originalValue = question.options[key];
+              const cleanedValue = cleaned.cleanedOptions[key];
+              const banglaValue = cleaned.banglaOptions[key];
+              const isCorrect = expanded && key === correctAnswerKey;
 
               return (
                 <div
@@ -119,16 +124,34 @@ export function AnalogyCard({
                   >
                     {key}
                   </span>
-                  <span
-                    className={cn(
-                      'flex-1 text-[13px] md:text-sm leading-snug pt-0.5',
-                      isCorrect
-                        ? 'font-semibold text-emerald-700 dark:text-emerald-400'
-                        : 'text-foreground/90'
+
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className={cn(
+                        'text-[13px] md:text-sm leading-snug',
+                        isCorrect
+                          ? 'font-semibold text-emerald-700 dark:text-emerald-400'
+                          : 'text-foreground/90'
+                      )}
+                    >
+                      {expanded ? originalValue : cleanedValue}
+                    </p>
+
+                    {/* Bangla hint (only expanded + only if present) */}
+                    {expanded && banglaValue && (
+                      <p
+                        className={cn(
+                          'text-[11px] mt-0.5 leading-snug',
+                          isCorrect
+                            ? 'text-emerald-600/80 dark:text-emerald-400/80'
+                            : 'text-muted-foreground'
+                        )}
+                      >
+                        {banglaValue}
+                      </p>
                     )}
-                  >
-                    {value}
-                  </span>
+                  </div>
+
                   {isCorrect && (
                     <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
                   )}
@@ -139,27 +162,16 @@ export function AnalogyCard({
 
           {/* Reveal hint (collapsed) */}
           {!expanded && (
-            <div
-              className={cn(
-                'mt-4 pt-3.5 border-t border-dashed border-border/60',
-                'flex items-center justify-between gap-3'
-              )}
-            >
+            <div className="mt-4 pt-3.5 border-t border-dashed border-border/60 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider shrink-0">
                   Answer
                 </span>
                 <span className="text-[12px] font-bold text-primary blur-[5px] select-none truncate">
-                  {correctAnswer}
+                  {cleaned.cleanedOptions[correctAnswerKey] || '?'}
                 </span>
               </div>
-              <div
-                className={cn(
-                  'flex items-center gap-1 shrink-0 px-2.5 py-1 rounded-full',
-                  'bg-primary/10 text-primary text-[10px] font-bold',
-                  'transition-transform group-hover:scale-105'
-                )}
-              >
+              <div className="flex items-center gap-1 shrink-0 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
                 <Sparkles className="h-3 w-3" />
                 Tap
                 <ChevronDown className="h-3 w-3" />
@@ -174,13 +186,7 @@ export function AnalogyCard({
               expanded ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0'
             )}
           >
-            <div
-              className={cn(
-                'p-3.5 rounded-xl',
-                'bg-primary/5 border border-primary/20',
-                'relative'
-              )}
-            >
+            <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20">
               <div className="flex items-center gap-1.5 mb-2">
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
                 <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
