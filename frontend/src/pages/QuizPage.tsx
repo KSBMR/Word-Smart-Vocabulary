@@ -9,6 +9,9 @@ import { loadAnalogyQuestions } from '@/services/AnalogyService';
 import { QuizQuestion } from '@/components/quiz/QuizQuestion';
 import { AnalogyFileQuestion } from '@/components/quiz/AnalogyFileQuestion';
 import { Button } from '@/components/ui/button';
+import { FullscreenButton } from '@/components/FullscreenButton';
+
+
 import {
   Card,
   CardContent,
@@ -18,6 +21,7 @@ import {
 import { Loader2, Bookmark, Shuffle, Brain, Link2, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Vocabulary, AnalogyQuestion } from '@/types';
+
 
 type QuizMode = 'meaning' | 'analogy';
 type QuizSource = 'random' | 'bookmarked';
@@ -308,14 +312,17 @@ export default function QuizPage() {
 
   // ==================== ACTIVE ====================
   return (
-    <div className="space-y-4 md:space-y-6 max-w-2xl mx-auto">
-      <div className="flex justify-between items-center">
+    <div className="space-y-4 md:space-y-6 max-w-2xl mx-auto animate-page-fade">
+      <div className="flex justify-between items-center gap-2">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
           Quiz
         </h2>
-        <span className="text-xs md:text-sm text-muted-foreground">
-          {mode === 'meaning' ? 'Word → Meaning' : 'Analogy'}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs md:text-sm text-muted-foreground hidden sm:inline">
+            {mode === 'meaning' ? 'Word → Meaning' : 'Analogy'}
+          </span>
+          <FullscreenButton />
+        </div>
       </div>
 
       {mode === 'meaning' && currentQuestion && (

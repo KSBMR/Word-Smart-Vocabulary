@@ -58,8 +58,10 @@ export function Logo({
             s.box,
             'object-cover',
             'shadow-md shadow-primary/20',
+            'image-render-crisp', // ← যোগ
             animated && 'shadow-xl shadow-primary/40 animate-float relative'
           )}
+          style={{ imageRendering: '-webkit-optimize-contrast' as any }}
         />
       </div>
 

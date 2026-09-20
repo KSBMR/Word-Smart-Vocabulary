@@ -4,6 +4,7 @@ import { useAnalogyProgress } from '@/hooks/useAnalogyProgress';
 import { AnalogyCard } from '@/components/analogy/AnalogyCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { FullscreenButton } from '@/components/FullscreenButton';
 import {
   Loader2,
   Search,
@@ -83,7 +84,7 @@ export default function AnalogyPage() {
       : 0;
 
   return (
-    <div className="space-y-5 md:space-y-6">
+    <div className="space-y-5 md:space-y-6 animate-page-fade">
       {/* ============ HEADER ============ */}
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -102,18 +103,20 @@ export default function AnalogyPage() {
             </p>
           </div>
 
-          {/* Reset button */}
-          {(correctCount > 0 || wrongCount > 0) && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl h-8 gap-1.5 text-xs"
-              onClick={resetProgress}
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Reset
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {(correctCount > 0 || wrongCount > 0) && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-xl h-10 gap-1.5 text-xs"
+                onClick={resetProgress}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            )}
+            <FullscreenButton />
+          </div>
         </div>
 
         {/* Stats cards (if progress exists) */}

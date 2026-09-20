@@ -30,6 +30,9 @@ import { cn } from '@/lib/utils'
 import { Vocabulary } from '@/types'
 import { useCoachMark } from '@/hooks/useCoachMark'
 import { useIsMobile } from '@/hooks/useIsMobile'
+import { FullscreenButton } from '@/components/FullscreenButton';
+
+
 
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
@@ -117,50 +120,56 @@ export default function VocabularyPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-page-fade">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
-            Vocabulary
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {filteredCount} words
-            {searchQuery && ` (filtered)`}
-            {!searchQuery && ` · ${totalWords} total`}
-          </p>
-        </div>
-
-        {/* Grid/List toggle – DESKTOP ONLY */}
-        {!isMobile && (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                'rounded-xl',
-                viewMode === 'grid' &&
-                  'gradient-bg text-white border-0 hover:opacity-90'
-              )}
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid2X2 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className={cn(
-                'rounded-xl',
-                viewMode === 'list' &&
-                  'gradient-bg text-white border-0 hover:opacity-90'
-              )}
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center justify-between gap-2 w-full sm:w-auto">
+            <div>
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight">
+                Vocabulary
+              </h1>
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">
+                {filteredCount} words
+                {searchQuery && ` (filtered)`}
+                {!searchQuery && ` · ${totalWords} total`}
+              </p>
+            </div>
+            <FullscreenButton className="md:hidden" />
           </div>
-        )}
-      </div>
+
+          <div className="flex items-center gap-2">
+            {/* Grid/List toggle – desktop only */}
+                {!isMobile && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={cn(
+                        'rounded-xl',
+                        viewMode === 'grid' &&
+                          'gradient-bg text-white border-0 hover:opacity-90'
+                      )}
+                      onClick={() => setViewMode('grid')}
+                    >
+                      <Grid2X2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={cn(
+                        'rounded-xl',
+                        viewMode === 'list' &&
+                          'gradient-bg text-white border-0 hover:opacity-90'
+                      )}
+                      onClick={() => setViewMode('list')}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+            <FullscreenButton className="hidden md:flex" />
+          </div>
+        </div>
 
       {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
