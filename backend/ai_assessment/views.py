@@ -1,88 +1,92 @@
 import os
 import json
 import re
-import google.generativeai as genai
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
-genai.configure(api_key=os.getenv('GEMINI_API_KEY'))   # <--- fixed
+
+OPENROUTER_KEY = os.getenv('OPENROUTER_API_KEY')
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_KEY or "",
+    default_headers={
+        "HTTP-Referer": "https://word-smart-vocabulary.vercel.app",
+        "X-Title": "Word Smart",
+    },
+)
+
+# ✅ Change model here
+MODEL_NAME = "google/gemma-4-31b-it:free"
+
+conversation_history = {}
+
 
 @csrf_exempt
-def speaking_assessment(request):
+def ai_agent(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
 
     try:
         data = json.loads(request.body)
-        transcript = data.get('transcript', '').strip()
-        if not transcript:
-            return JsonResponse({'error': 'No transcript provided'}, status=400)
+        user_message = data.get('message', '').strip()
+        session_id = data.get('session_id', 'default')
 
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"""
-You are an English language coach. The user spoke the following sentence:
+        history = conversation_history.get(session_id, [])
+        if user_message:
+            history.append({"role": "user", "content": user_message})
 
-"{transcript}"
+        prompt = f"""You are an IELTS speaking examiner.
+Conversation history:
+{json.dumps(history, indent=2)}
 
-Analyze the user's speaking and provide feedback in JSON format with these keys:
-- "grammar_errors": list of errors with corrections
-- "vocabulary_suggestions": list of better word choices
-- "coherence_feedback": how clear and structured the response is
-- "fluency_score": a number from 0 to 9
-- "overall_feedback": a short summary
+Task:
+- If start, ask Part 1 IELTS question.
+- If user answered, give feedback (grammar, vocabulary, fluency, band 0-9), then ask next question.
 
-Return ONLY valid JSON.
+Respond ONLY with valid JSON:
+{{
+  "type": "question" or "feedback",
+  "content": "Text to speak",
+  "score": null or number,
+  "errors": [],
+  "suggestions": []
+}}
 """
-        response = model.generate_content(prompt)
-        raw = response.text
+
+        response = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "You are an IELTS examiner. Always respond with valid JSON only."},
+                {"role": "user", "content": prompt},
+            ],
+            max_tokens=500,
+            temperature=0.7,
+        )
+
+        raw = response.choices[0].message.content
+
         json_match = re.search(r'\{.*\}', raw, re.DOTALL)
         if json_match:
-            result = json.loads(json_match.group())
+            try:
+                reply_json = json.loads(json_match.group())
+            except json.JSONDecodeError:
+                reply_json = {"type": "question", "content": raw}
         else:
-            result = {"error": "Could not parse response", "raw": raw}
-        return JsonResponse(result, safe=False)
+            reply_json = {"type": "question", "content": raw}
+
+        history.append({"role": "assistant", "content": reply_json.get('content', '')})
+        conversation_history[session_id] = history
+
+        return JsonResponse(reply_json, safe=False)
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
-@csrf_exempt
-def writing_assessment(request):
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-
-    try:
-        data = json.loads(request.body)
-        text = data.get('text', '').strip()
-        if not text:
-            return JsonResponse({'error': 'No text provided'}, status=400)
-
-        model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"""
-You are an IELTS writing examiner. Evaluate the following text:
-
-"{text}"
-
-Provide feedback in JSON format with keys:
-- "overall": overall band score (0-9)
-- "task_response": score for task response (0-9)
-- "coherence": score for coherence and cohesion (0-9)
-- "lexical": score for lexical resource (0-9)
-- "grammar": score for grammatical range and accuracy (0-9)
-- "errors": list of specific grammar/spelling errors with corrections
-- "suggestions": list of suggestions to improve
-
-Return ONLY valid JSON.
-"""
-        response = model.generate_content(prompt)
-        raw = response.text
-        json_match = re.search(r'\{.*\}', raw, re.DOTALL)
-        if json_match:
-            result = json.loads(json_match.group())
-        else:
-            result = {"error": "Could not parse response", "raw": raw}
-        return JsonResponse(result, safe=False)
-
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'type': 'question',
+            'content': f'Error: {str(e)[:200]}'
+        }, status=200)
