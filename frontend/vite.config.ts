@@ -8,41 +8,58 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'analogy.json'],
-      manifest: {
-        name: 'Word Smart — Vocabulary Learning',
-        short_name: 'WordSmart',
-        description: 'Premium vocabulary learning platform',
-        theme_color: '#6366F1',
-        background_color: '#0B1220',
-        display: 'standalone',
-        orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
-        icons: [
-          {
-            src: 'favicon.svg',
-            sizes: 'any',
-            type: 'image/svg+xml',
-            purpose: 'any',
-          },
-        ],
-      },
+      strategies: 'generateSW',
+      includeAssets: [
+        'favicon.ico',
+        'favicon.svg',
+        'favicon.jpg',
+        'favicon-16x16.png',
+        'favicon-32x32.png',
+        'apple-touch-icon.png',
+        'android-chrome-192x192.png',
+        'android-chrome-512x512.png',
+        'site.webmanifest',
+        'analogy.json',
+        'wordsmart1.json',
+        'wordsmart2.json',
+      ],
+      manifest: false,
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,json}'],
-        navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/api\//],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+        globPatterns: [
+          '**/*.{js,css,html,ico,png,jpg,jpeg,svg,webp,woff,woff2,ttf,otf,json,webmanifest}',
+        ],
+        globIgnores: [
+          '**/node_modules/**/*',
+          '**/*.map',
+          'sw.js',
+          'workbox-*.js',
+          'manifest.webmanifest',
+        ],
+        navigateFallback: '/index.html',
+        navigateFallbackAllowlist: [/^\/$/],
+        navigateFallbackDenylist: [
+          /^\/api\//,
+          /^\/admin/,
+          /^\/_/,
+          /\.[^/]+$/,
+        ],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
         runtimeCaching: [
-          // JSON data files (vocabulary + analogy)
+          // Data files — CacheFirst forever
           {
             urlPattern: /\/wordsmart[12]\.json$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'vocabulary-cache-v1',
+              cacheName: 'vocabulary-data-v2',
               expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
               },
             },
           },
@@ -50,10 +67,13 @@ export default defineConfig({
             urlPattern: /\/analogy\.json$/,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'analogy-cache-v1',
+              cacheName: 'analogy-data-v2',
               expiration: {
                 maxEntries: 5,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
               },
             },
           },
@@ -62,11 +82,12 @@ export default defineConfig({
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'google-fonts-stylesheets',
+              cacheName: 'google-fonts-css',
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
               },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
@@ -78,12 +99,28 @@ export default defineConfig({
                 maxEntries: 30,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
               },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // Navigation — NetworkFirst with offline fallback
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'pages-cache',
+              networkTimeoutSeconds: 3,
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],
       },
       devOptions: {
-        enabled: false, // Dev-এ SW disable, production-এ enable
+        enabled: false,
+        navigateFallback: 'index.html',
       },
     }),
   ],
@@ -91,5 +128,20 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+    build: {
+    target: 'es2018',
+    minify: 'terser',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'query-vendor': ['@tanstack/react-query', 'axios'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
   },
 })

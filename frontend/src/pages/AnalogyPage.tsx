@@ -4,9 +4,9 @@ import { useAnalogyProgress } from '@/hooks/useAnalogyProgress';
 import { AnalogyCard } from '@/components/analogy/AnalogyCard';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { FullscreenButton } from '@/components/FullscreenButton';
 import {
-  Loader2,
   Search,
   X,
   ArrowUp,
@@ -18,12 +18,11 @@ import {
 import { cn } from '@/lib/utils';
 import { useCoachMark } from '@/hooks/useCoachMark';
 
-import { LoadingScreen } from '@/components/LoadingScreen';
-
 const ALPHABETS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function AnalogyPage() {
+  // ✅ ALL HOOKS FIRST — before any early return
   const {
     questions,
     loading,
@@ -44,6 +43,7 @@ export default function AnalogyPage() {
   const [showTopButton, setShowTopButton] = useState(false);
   const [letterFilter, setLetterFilter] = useState<string | null>(null);
 
+  // ✅ useEffect hooks
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [searchQuery, letterFilter]);
@@ -56,12 +56,23 @@ export default function AnalogyPage() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // ✅ useMemo hook
   const filtered = useMemo(() => {
     if (!letterFilter) return questions;
     return questions.filter((q) =>
       q.question.toUpperCase().startsWith(letterFilter)
     );
   }, [questions, letterFilter]);
+
+  // ✅ NOW early return is safe (after all hooks)
+  if (loading) {
+    return (
+      <LoadingScreen
+        fullScreen={false}
+        message="Loading analogy questions..."
+      />
+    );
+  }
 
   const visibleQuestions = filtered.slice(0, visibleCount);
 
@@ -72,15 +83,9 @@ export default function AnalogyPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  if (loading) {
-    return <LoadingScreen fullScreen={false} message="Loading analogy questions..." />;
-  }
-
   const progressPercent =
     correctCount + wrongCount > 0
-      ? Math.round(
-          (correctCount / (correctCount + wrongCount)) * 100
-        )
+      ? Math.round((correctCount / (correctCount + wrongCount)) * 100)
       : 0;
 
   return (
@@ -119,7 +124,7 @@ export default function AnalogyPage() {
           </div>
         </div>
 
-        {/* Stats cards (if progress exists) */}
+        {/* Stats cards */}
         {(correctCount > 0 || wrongCount > 0) && (
           <div className="grid grid-cols-3 gap-2 md:gap-3">
             <div className="rounded-xl border border-border/60 bg-card p-2.5 md:p-3">
@@ -159,67 +164,62 @@ export default function AnalogyPage() {
         )}
       </div>
 
-      {/* ============ SEARCH + ALPHABET ============ */}
-      <div className="sticky top-0 md:top-0 z-30 -mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8 py-3 bg-background/95 backdrop-blur-md border-b border-border/40 space-y-3">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-          <Input
-            type="search"
-            placeholder="Search questions, options, explanations..."
-            className="pl-9 pr-9 h-11 rounded-xl bg-muted/50 border-border/60"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/30 transition-colors"
-              aria-label="Clear"
-            >
-              <X className="h-3.5 w-3.5 text-muted-foreground" />
-            </button>
-          )}
-        </div>
-
-        {/* Alphabet pills */}
-        <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+      {/* ============ SEARCH ============ */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <Input
+          type="search"
+          placeholder="Search questions, options, explanations..."
+          className="pl-9 pr-9 h-11 rounded-xl bg-muted/50 border-border/60"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        {searchQuery && (
           <button
-            onClick={() => setLetterFilter(null)}
-            className={cn(
-              'px-3 h-8 rounded-full text-xs font-bold shrink-0 transition-all',
-              !letterFilter
-                ? 'gradient-bg text-white shadow-md shadow-primary/30'
-                : 'bg-muted text-muted-foreground hover:bg-muted/70'
-            )}
+            onClick={() => setSearchQuery('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full bg-muted-foreground/20 hover:bg-muted-foreground/30 transition-colors"
+            aria-label="Clear"
           >
-            All
+            <X className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
-          {ALPHABETS.map((letter) => {
-            const has = hasWordsForLetter(letter);
-            const active = letterFilter === letter;
+        )}
+      </div>
 
-            return (
-              <button
-                key={letter}
-                onClick={() =>
-                  has && setLetterFilter(active ? null : letter)
-                }
-                disabled={!has}
-                className={cn(
-                  'w-8 h-8 rounded-full text-xs font-bold shrink-0 transition-all',
-                  active
-                    ? 'gradient-bg text-white scale-110 shadow-md shadow-primary/30'
-                    : has
-                      ? 'bg-muted text-muted-foreground hover:bg-muted/70'
-                      : 'bg-muted/30 text-muted-foreground/30 cursor-not-allowed'
-                )}
-              >
-                {letter}
-              </button>
-            );
-          })}
-        </div>
+      {/* ============ ALPHABET FILTER ============ */}
+      <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        <button
+          onClick={() => setLetterFilter(null)}
+          className={cn(
+            'px-3 h-8 rounded-full text-xs font-bold shrink-0 transition-all',
+            !letterFilter
+              ? 'gradient-bg text-white shadow-md shadow-primary/30'
+              : 'bg-muted text-muted-foreground hover:bg-muted/70'
+          )}
+        >
+          All
+        </button>
+        {ALPHABETS.map((letter) => {
+          const has = hasWordsForLetter(letter);
+          const active = letterFilter === letter;
+
+          return (
+            <button
+              key={letter}
+              onClick={() => has && setLetterFilter(active ? null : letter)}
+              disabled={!has}
+              className={cn(
+                'w-8 h-8 rounded-full text-xs font-bold shrink-0 transition-all',
+                active
+                  ? 'gradient-bg text-white scale-110 shadow-md shadow-primary/30'
+                  : has
+                    ? 'bg-muted text-muted-foreground hover:bg-muted/70'
+                    : 'bg-muted/30 text-muted-foreground/30 cursor-not-allowed'
+              )}
+            >
+              {letter}
+            </button>
+          );
+        })}
       </div>
 
       {/* ============ QUESTIONS ============ */}
@@ -231,7 +231,6 @@ export default function AnalogyPage() {
         </div>
       ) : (
         <>
-          {/* Desktop: 2 columns | Mobile: 1 column */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {visibleQuestions.map((q, idx) => (
               <AnalogyCard
@@ -244,7 +243,6 @@ export default function AnalogyPage() {
             ))}
           </div>
 
-          {/* Load More */}
           {visibleCount < filtered.length && (
             <div className="flex justify-center pt-2">
               <Button

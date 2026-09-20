@@ -103,6 +103,31 @@
   ::selection {
     background-color: hsl(var(--primary) / 0.2);
   }
+
+    html,
+  body {
+    min-height: 100vh;
+    min-height: 100dvh; /* ✅ Mobile-safe */
+  }
+
+  /* Prevent black screen in fullscreen */
+  :fullscreen,
+  :-webkit-full-screen {
+    background-color: hsl(var(--background));
+  }
+
+  /* Better mobile scrolling */
+  html {
+    overscroll-behavior-y: none;
+  }
+
+  /* Prevent accidental zoom */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* iOS prevent zoom */
+  }
+
 }
 
 @layer components {
@@ -275,5 +300,47 @@
   .image-render-crisp {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+  }
+
+  .min-h-screen-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .h-screen-safe {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+    /* Reduce motion for mobile performance */
+  @media (max-width: 768px) {
+    /* Disable heavy animations */
+    .animate-ping-slow,
+    .animate-shimmer {
+      animation: none !important;
+    }
+
+    /* Reduce blur impact */
+    .backdrop-blur-xl,
+    .backdrop-blur-2xl {
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+    }
+
+    /* Faster transitions */
+    * {
+      transition-duration: 150ms !important;
+    }
+  }
+
+  /* Respect user preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

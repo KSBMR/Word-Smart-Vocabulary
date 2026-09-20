@@ -135,16 +135,39 @@
     <script type="module" src="/src/main.tsx"></script>
 
     <!-- Remove initial loader after React mounts -->
-    <script>
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loader = document.getElementById('initial-loader');
-          if (loader) {
-            loader.classList.add('hidden');
-            setTimeout(() => loader.remove(), 400);
+      <script>
+        // Remove loader on window load OR after timeout (whichever first)
+        (function () {
+          let removed = false;
+
+          function removeLoader() {
+            if (removed) return;
+            removed = true;
+            const loader = document.getElementById('initial-loader');
+            if (loader) {
+              loader.classList.add('hidden');
+              setTimeout(() => loader.remove(), 400);
+            }
           }
-        }, 400);
-      });
-    </script>
+
+          // Try on load event
+          window.addEventListener('load', () => {
+            setTimeout(removeLoader, 300);
+          });
+
+          // Fallback: remove after 3 seconds regardless
+          setTimeout(removeLoader, 3000);
+
+          // Fallback: remove when React mounts
+          const observer = new MutationObserver(() => {
+            const root = document.getElementById('root');
+            if (root && root.children.length > 0) {
+              setTimeout(removeLoader, 200);
+              observer.disconnect();
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+        })();
+      </script>
   </body>
 </html>
