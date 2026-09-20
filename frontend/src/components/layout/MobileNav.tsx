@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Home, Library, Brain, BarChart3 } from 'lucide-react';
+import { Home, Library, Brain, BarChart3, Link2 } from 'lucide-react';
 
 const items = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/vocabulary', label: 'Words', icon: Library },
+  { to: '/analogy', label: 'Analogy', icon: Link2 }, 
   { to: '/quiz', label: 'Quiz', icon: Brain },
   { to: '/progress', label: 'Stats', icon: BarChart3 },
 ];

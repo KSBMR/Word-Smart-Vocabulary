@@ -6,6 +6,8 @@ import { useAuthModal } from '@/store/authModalStore';
 import { Button } from '@/components/ui/button';
 import { LogOut, User } from 'lucide-react';
 
+import { Logo } from '@/components/Logo';
+
 interface SidebarProps {
   onNavigate?: () => void;
 }
@@ -13,6 +15,7 @@ interface SidebarProps {
 const navItems = [
   { to: '/', label: 'Home', emoji: '🏠' },
   { to: '/vocabulary', label: 'Vocabulary', emoji: '📚' },
+  { to: '/analogy', label: 'Analogy', emoji: '🔗' }, 
   { to: '/assessment', label: 'Assessment', emoji: '🎙️' },
   { to: '/ai-agent', label: 'AI Coach', emoji: '✨' },
   { to: '/quiz', label: 'Quiz', emoji: '🧠' },
@@ -34,21 +37,13 @@ export default function Sidebar({ onNavigate }: SidebarProps) {
   return (
     <nav className="flex h-full flex-col p-3 gap-0.5 overflow-y-auto">
       {/* Logo */}
-      <Link
-        to="/"
-        onClick={handleNavigate}
-        className="flex items-center gap-2.5 px-3 py-2.5 mb-3 rounded-xl hover:bg-muted/60 transition-colors"
-      >
-        <div className="w-9 h-9 rounded-xl gradient-bg flex items-center justify-center shadow-md shadow-primary/20">
-          <span className="text-white font-bold text-base">W</span>
-        </div>
-        <div className="min-w-0">
-          <p className="font-bold text-sm tracking-tight">Word Smart</p>
-          <p className="text-[10px] text-muted-foreground">
-            Vocabulary Learning
-          </p>
-        </div>
-      </Link>
+    <Link
+      to="/"
+      onClick={handleNavigate}
+      className="px-3 py-2.5 mb-3 rounded-xl hover:bg-muted/60 transition-colors block"
+    >
+      <Logo size="md" showText={true} />
+    </Link>
 
       {/* Nav Items */}
       <div className="space-y-0.5 flex-1">

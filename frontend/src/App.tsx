@@ -15,6 +15,7 @@ import SettingsPage from '@/pages/SettingsPage';
 import AssessmentPage from '@/pages/AssessmentPage';
 // import AIAgentPage from '@/pages/AIAgentPage';
 import { useAuth } from '@/contexts/AuthContext';
+import AnalogyPage from '@/pages/AnalogyPage';
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ function App() {
               <Route path="/assessment" element={<AssessmentPage />} />
               {/* <Route path="/ai-agent" element={<AIAgentPage />} /> */}
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/analogy" element={<AnalogyPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

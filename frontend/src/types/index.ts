@@ -12,3 +12,18 @@ export interface Vocabulary {
 
 export type Book = 1 | 2
 export type Theme = 'light' | 'dark' | 'system'
+
+
+export interface AnalogyQuestion {
+  sl: number;
+  question: string;
+  options: {
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+    E: string;
+  };
+  answer: string;
+  explanation: string;
+}

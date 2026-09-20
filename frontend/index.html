@@ -1,26 +1,150 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="apple-touch-icon" href="/favicon.svg" />
-  <meta name="theme-color" content="#6366F1" />
+    <!-- ============ FAVICON ============ -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.webmanifest" />
+    <!-- ============ PWA / MANIFEST ============ -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#6366F1" />
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Word Smart" />
+    <meta name="application-name" content="Word Smart" />
+    <meta name="format-detection" content="telephone=no" />
 
-  <title>Word Smart — Vocabulary Learning</title>
-</head>
+    <!-- ============ FONTS ============ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Word Smart — Vocabulary Learning</title>
+    <meta
+      name="description"
+      content="Premium vocabulary learning platform for BCS, Bank, GRE, IELTS, TOEFL and competitive exams."
+    />
+
+    <!-- ============ INITIAL LOADING SCREEN (Before React Mounts) ============ -->
+    <style>
+      #initial-loader {
+        position: fixed;
+        inset: 0;
+        background: #0b1220;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: opacity 0.3s ease;
+      }
+      #initial-loader.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loader-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 22px;
+        object-fit: cover;
+        animation: pulse-loader 1.5s ease-in-out infinite;
+        box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+        margin: 0 auto;
+        display: block;
+      }
+      @keyframes pulse-loader {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.08);
+          opacity: 0.9;
+        }
+      }
+      .loader-text {
+        color: #94a3b8;
+        font-family: Inter, system-ui, sans-serif;
+        font-size: 12px;
+        margin-top: 20px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+      @media (prefers-color-scheme: light) {
+        #initial-loader {
+          background: #f7f8fa;
+        }
+        .loader-text {
+          color: #64748b;
+        }
+      }
+
+      .loader-logo::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 22px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(255, 255, 255, 0.2) 50%,
+          transparent 100%
+        );
+        background-size: 200% 100%;
+        animation: shine-loader 2s linear infinite;
+        overflow: hidden;
+      }
+
+      @keyframes shine-loader {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+    </style>
+  </head>
   <body>
+    <!-- ============ INITIAL LOADING SCREEN ============ -->
+    <div id="initial-loader">
+      <div style="text-align: center">
+        <img src="/favicon.jpg" alt="Word Smart" class="loader-logo" />
+        <div class="loader-text">Loading</div>
+      </div>
+    </div>
+
+    <!-- ============ REACT ROOT ============ -->
     <div id="root"></div>
+
+    <!-- ============ ENTRY SCRIPT ============ -->
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Remove initial loader after React mounts -->
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loader = document.getElementById('initial-loader');
+          if (loader) {
+            loader.classList.add('hidden');
+            setTimeout(() => loader.remove(), 400);
+          }
+        }, 400);
+      });
+    </script>
   </body>
 </html>

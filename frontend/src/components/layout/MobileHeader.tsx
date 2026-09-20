@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Menu, Sun, Moon, LogOut, User } from 'lucide-react';
 import Sidebar from './Sidebar';
+import { Logo } from '../Logo';
 
 export default function MobileHeader() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -53,11 +54,10 @@ export default function MobileHeader() {
             className="flex items-center gap-2 min-w-0"
             onClick={() => setMenuOpen(false)}
           >
-            <div className="w-8 h-8 rounded-lg gradient-bg flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-sm">W</span>
-            </div>
+            <Logo size="sm" showText={false} />
             <span className="font-bold text-sm truncate">Word Smart</span>
           </Link>
+          
         </div>
 
         {/* Right: Theme + Profile */}
