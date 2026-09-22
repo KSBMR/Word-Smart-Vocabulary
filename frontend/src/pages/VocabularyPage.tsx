@@ -176,7 +176,7 @@ export default function VocabularyPage() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
-            type="search"
+            type="text"
             placeholder="Search words, meanings, sentences..."
             className="pl-9 pr-9 h-10 rounded-xl bg-muted/60 border-border/60"
             value={searchQuery}
