@@ -15,6 +15,7 @@ import SettingsPage from '@/pages/SettingsPage';
 import AIAgentPage from '@/pages/AIAgentPage';
 import { useAuth } from '@/contexts/AuthContext';
 import AnalogyPage from '@/pages/AnalogyPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ function App() {
               <Route path="/bookmarks" element={<BookmarksPage />} />
               <Route path="/progress" element={<ProgressPage />} />
               <Route path="/settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

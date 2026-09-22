@@ -343,4 +343,46 @@
       transition-duration: 0.01ms !important;
     }
   }
+    /* Float number animation for 404 */
+  @keyframes float-number {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(-1deg);
+    }
+  }
+
+  .animate-float-number {
+    animation: float-number 3s ease-in-out infinite;
+    display: inline-block;
+  }
+
+  /* Float letters/emojis */
+  @keyframes float-letter {
+    0%, 100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(5deg);
+    }
+  }
+
+  .animate-float-letter {
+    animation: float-letter 4s ease-in-out infinite;
+  }
+
+  /* Float blobs (background) */
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(20px, -20px) scale(1.05);
+    }
+  }
+
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+  }
 }
