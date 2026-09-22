@@ -119,55 +119,67 @@
       }
     </style>
   </head>
-  <body>
-    <!-- ============ INITIAL LOADING SCREEN ============ -->
-    <div id="initial-loader">
-      <div style="text-align: center">
-        <img src="/favicon.jpg" alt="Word Smart" class="loader-logo" />
-        <div class="loader-text">Loading</div>
-      </div>
+<body>
+  <!-- Initial loader -->
+  <div id="initial-loader">
+    <div style="text-align: center">
+      <img src="/favicon.jpg" alt="Word Smart" class="loader-logo" />
+      <div class="loader-text">Loading</div>
     </div>
+  </div>
 
-    <!-- ============ REACT ROOT ============ -->
-    <div id="root"></div>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
 
-    <!-- ============ ENTRY SCRIPT ============ -->
-    <script type="module" src="/src/main.tsx"></script>
+  <script>
+    // ✅ Robust loader removal
+    (function () {
+      var loader = document.getElementById('initial-loader');
+      var removed = false;
 
-    <!-- Remove initial loader after React mounts -->
-      <script>
-        // Remove loader on window load OR after timeout (whichever first)
-        (function () {
-          let removed = false;
-
-          function removeLoader() {
-            if (removed) return;
-            removed = true;
-            const loader = document.getElementById('initial-loader');
-            if (loader) {
-              loader.classList.add('hidden');
-              setTimeout(() => loader.remove(), 400);
-            }
+      function removeLoader() {
+        if (removed || !loader) return;
+        removed = true;
+        loader.classList.add('hidden');
+        setTimeout(function () {
+          if (loader && loader.parentNode) {
+            loader.parentNode.removeChild(loader);
           }
+        }, 400);
+      }
 
-          // Try on load event
-          window.addEventListener('load', () => {
-            setTimeout(removeLoader, 300);
-          });
+      // ✅ 1. Remove on load event
+      window.addEventListener('load', function () {
+        setTimeout(removeLoader, 400);
+      });
 
-          // Fallback: remove after 3 seconds regardless
-          setTimeout(removeLoader, 3000);
+      // ✅ 2. Remove when React mounts (MutationObserver)
+      var observer = new MutationObserver(function () {
+        var root = document.getElementById('root');
+        if (root && root.children.length > 0) {
+          setTimeout(removeLoader, 200);
+          observer.disconnect();
+        }
+      });
 
-          // Fallback: remove when React mounts
-          const observer = new MutationObserver(() => {
-            const root = document.getElementById('root');
-            if (root && root.children.length > 0) {
-              setTimeout(removeLoader, 200);
-              observer.disconnect();
-            }
-          });
-          observer.observe(document.body, { childList: true, subtree: true });
-        })();
-      </script>
-  </body>
+      if (document.body) {
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+
+      // ✅ 3. Absolute fallback — max 5 seconds
+      setTimeout(removeLoader, 5000);
+
+      // ✅ 4. If SW update is happening, don't get stuck
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          // New SW activated — reload once
+          if (!sessionStorage.getItem('sw-reloaded')) {
+            sessionStorage.setItem('sw-reloaded', 'true');
+            window.location.reload();
+          }
+        });
+      }
+    })();
+  </script>
+</body>
 </html>

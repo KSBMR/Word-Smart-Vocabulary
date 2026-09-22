@@ -33,22 +33,15 @@ export default defineConfig({
           '**/*.map',
           'sw.js',
           'workbox-*.js',
-          'manifest.webmanifest',
         ],
         navigateFallback: '/index.html',
-        navigateFallbackAllowlist: [/^\/$/],
-        navigateFallbackDenylist: [
-          /^\/api\//,
-          /^\/admin/,
-          /^\/_/,
-          /\.[^/]+$/,
-        ],
+        navigateFallbackAllowlist: [/^(?!\/api\/).*/],
+        navigateFallbackDenylist: [/^\/api\//, /^\/admin/, /^\/_/],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
         maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
         runtimeCaching: [
-          // Data files — CacheFirst forever
           {
             urlPattern: /\/wordsmart[12]\.json$/,
             handler: 'CacheFirst',
@@ -58,9 +51,7 @@ export default defineConfig({
                 maxEntries: 5,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
               },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
           {
@@ -72,21 +63,15 @@ export default defineConfig({
                 maxEntries: 5,
                 maxAgeSeconds: 60 * 60 * 24 * 365,
               },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
-          // Google Fonts
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts-css',
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
@@ -95,14 +80,10 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'google-fonts-webfonts',
-              expiration: {
-                maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
-              },
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          // Navigation — NetworkFirst with offline fallback
           {
             urlPattern: ({ request }) => request.mode === 'navigate',
             handler: 'NetworkFirst',
@@ -120,7 +101,6 @@ export default defineConfig({
       },
       devOptions: {
         enabled: false,
-        navigateFallback: 'index.html',
       },
     }),
   ],
@@ -129,19 +109,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-    build: {
+  build: {
     target: 'es2018',
-    minify: 'terser',
     sourcemap: false,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
-          'query-vendor': ['@tanstack/react-query', 'axios'],
-        },
-      },
-    },
     chunkSizeWarningLimit: 1000,
   },
 })

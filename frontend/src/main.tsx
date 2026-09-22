@@ -1,20 +1,3 @@
-
-
-// import React from 'react'
-// import ReactDOM from 'react-dom/client'
-// import App from './App'
-// import './index.css'
-// import { AuthProvider } from '@/contexts/AuthContext'
-
-// ReactDOM.createRoot(document.getElementById('root')!).render(
-//   <React.StrictMode>
-//     <AuthProvider>
-//       <App />
-//     </AuthProvider>
-//   </React.StrictMode>
-// )
-
-
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
@@ -23,62 +6,44 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import { LoadingScreen } from '@/components/LoadingScreen'
 import { registerSW } from 'virtual:pwa-register'
 
-// ✅ Warm caches with data files immediately after load
-function warmCaches() {
-  if (!('caches' in window)) return
-
-  const files = [
-    '/wordsmart1.json',
-    '/wordsmart2.json',
-    '/analogy.json',
-    '/favicon.svg',
-    '/favicon.jpg',
-  ]
-
-  Promise.all(
-    files.map((url) =>
-      fetch(url, { cache: 'reload' }).catch(() => null)
-    )
-  ).then(() => {
-    console.log('✅ Caches warmed with data files')
-  })
-}
-
-// Register SW
+// SW registration
 if ('serviceWorker' in navigator) {
   try {
     registerSW({
       immediate: true,
       onOfflineReady() {
         console.log('✅ App ready to work offline')
-        warmCaches()
       },
       onRegisteredSW(
         _swUrl: string,
         registration: ServiceWorkerRegistration | undefined
       ) {
         if (registration) {
-          // Periodic update check
-          setInterval(
-            () => registration.update(),
-            60 * 60 * 1000
-          )
-          // Warm caches after SW is registered
-          setTimeout(warmCaches, 2000)
+          // Check for updates every 30 min
+          setInterval(() => registration.update(), 30 * 60 * 1000)
         }
+      },
+      onRegisterError(error: any) {
+        console.warn('⚠️ SW register error:', error)
       },
     })
   } catch (err) {
-    console.warn('⚠️ SW registration failed:', err)
+    console.warn('⚠️ SW not supported:', err)
   }
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Suspense fallback={<LoadingScreen message="Starting Word Smart..." />}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </Suspense>
-  </React.StrictMode>
-)
+// Mount React
+const rootEl = document.getElementById('root')
+if (rootEl) {
+  ReactDOM.createRoot(rootEl).render(
+    <React.StrictMode>
+      <Suspense
+        fallback={<LoadingScreen message="Starting Word Smart..." />}
+      >
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </Suspense>
+    </React.StrictMode>
+  )
+}
