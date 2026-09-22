@@ -16,7 +16,7 @@ const navItems = [
   { to: '/', label: 'Home', emoji: '🏠' },
   { to: '/vocabulary', label: 'Vocabulary', emoji: '📚' },
   { to: '/analogy', label: 'Analogy', emoji: '🔗' }, 
-  { to: '/assessment', label: 'Assessment', emoji: '🎙️' },
+  // { to: '/assessment', label: 'Assessment', emoji: '🎙️' },
   { to: '/ai-agent', label: 'AI Coach', emoji: '✨' },
   { to: '/quiz', label: 'Quiz', emoji: '🧠' },
   { to: '/revision', label: 'Revision', emoji: '🔄' },

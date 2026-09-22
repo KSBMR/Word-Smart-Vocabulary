@@ -13,7 +13,6 @@ import BookmarksPage from '@/pages/BookmarksPage';
 import ProgressPage from '@/pages/ProgressPage';
 import SettingsPage from '@/pages/SettingsPage';
 import AIAgentPage from '@/pages/AIAgentPage';
-import AssessmentPage from '@/pages/AssessmentPage';
 import { useAuth } from '@/contexts/AuthContext';
 import AnalogyPage from '@/pages/AnalogyPage';
 
@@ -41,7 +40,6 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/vocabulary" element={<VocabularyPage />} />
               <Route path="/analogy" element={<AnalogyPage />} />
-              <Route path="/assessment" element={<AssessmentPage />} />
               <Route path="/ai-agent" element={<AIAgentPage />} />   {/* ← যোগ করুন */}
               <Route path="/quiz" element={<QuizPage />} />
               <Route path="/revision" element={<RevisionPage />} />
